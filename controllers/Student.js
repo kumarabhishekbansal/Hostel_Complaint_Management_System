@@ -1,9 +1,11 @@
 const Student = require("../models/Student");
-const {update_room_by_hostel_roomno}=require("./rooms");
-const {create_issue_by_student,get_all_complaints_with_student}=require("./complaints");
+const { update_room_by_hostel_roomno } = require("./rooms");
+const {
+  create_issue_by_student,
+  get_all_complaints_with_student,
+} = require("./complaints");
 
 // warden can add students
-
 
 const register_Student_From_Warden = async (data) => {
   try {
@@ -45,57 +47,74 @@ const register_Student_From_Warden = async (data) => {
     await registerStudent.save();
 
     // now we have to update hostel model
-      // when ever a new student is added by warden 
-      // we have to get hostel id through which we can update
-      // the students in hostel model and update the capacity of that room
-      // with specific hostel id and room no.
-    
+    // when ever a new student is added by warden
+    // we have to get hostel id through which we can update
+    // the students in hostel model and update the capacity of that room
+    // with specific hostel id and room no.
 
-      const data={
-        hostel_id:hostelAssign,
-        roomno:roomNo,
-        floor:floorNo
-      }
-      update_room_by_hostel_roomno(data);
-
+    const datas = {
+      hostel_id: hostelAssign,
+      roomno: roomNo,
+      floor: floorNo,
+    };
+    update_room_by_hostel_roomno(datas);
+    return true;
   } catch (error) {
     console.log("error while registering student");
+    console.log(error.message);
+    return false;
   }
 };
 
-
-
-// login 
+// login
 const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     let student = await Student.findOne({ email });
     if (!student) {
-      throw new Error("EMAIL NOT FOUND");
+      // throw new Error("EMAIL NOT FOUND");
+      return res.status(400).json({
+        message:"Email not found"
+      });
     }
     if (await student.comparePassword(password)) {
-      const data = await Warden.findById(warden._id).populate([
+      const data = await Student.findById(student._id).populate([
         {
           path: "hostelAssign",
           select: ["hostel_name"],
         },
       ]);
+      const token=await data.generateJWT();
+      if (req.cookies["Bearer_student"]) {
+        req.cookies["Bearer_student"] = "";
+      }
+      res.cookie("Bearer_student", token, {
+        path: "/",
+        expires: new Date(Date.now() + 1000 * 24*60*60), // 30 seconds
+        httpOnly: true,
+        sameSite: "lax",
+      });
       return res.status(200).json({
-        name: data[0].name,
-        phoneNo: data[0].phoneNo,
-        email: data[0].email,
-        profilePic: data[0].profilePic,
-        address: data[0].address,
-        role: data[0].role,
-        hostelAssign: data[0].hostelAssign,
-        hostel_name: data[0].hostelAssign.hostel_name,
-        roomNo:data[0].roomNo,
-        department:data[0].department,
-        floorNo:data[0].floorNo,
+        name: data.name,
+        phoneNo: data.phoneNo,
+        email: data.email,
+        profilePic: data.profilePic,
+        address: data.address,
+        role: data.role,
+        hostelAssign: data.hostelAssign,
+        hostel_name: data.hostelAssign.hostel_name,
+        roomNo: data.roomNo,
+        department: data.department,
+        floorNo: data.floorNo,
+        token: token,
       });
     }
+    return res.status(400).json({
+      message:"wrong credentials"
+    });
   } catch (error) {
     console.log("error while login in student");
+    console.log(error.message);
   }
 };
 
@@ -109,21 +128,21 @@ const getProfile = async (req, res, next) => {
         select: ["hostel_name"],
       },
     ]);
-    if (data.length == 0) {
-      throw new Error("Nothing to show");
-    }
+    // if (data.length == 0) {
+    //   throw new Error("Nothing to show");
+    // }
     return res.status(200).json({
-      name: data[0].name,
-      phoneNo: data[0].phoneNo,
-      email: data[0].email,
-      profilePic: data[0].profilePic,
-      address: data[0].address,
-      role: data[0].role,
-      hostelAssign: data[0].hostelAssign,
-      hostel_name: data[0].hostelAssign.hostel_name,
-      roomNo:data[0].roomNo,
-      department:data[0].department,
-      floorNo:data[0].floorNo,
+      name: data.name,
+      phoneNo: data.phoneNo,
+      email: data.email,
+      profilePic: data.profilePic,
+      address: data.address,
+      role: data.role,
+      hostelAssign: data.hostelAssign,
+      hostel_name: data.hostelAssign.hostel_name,
+      roomNo: data.roomNo,
+      department: data.department,
+      floorNo: data.floorNo,
     });
   } catch (error) {
     console.log("error while getting student profile");
@@ -147,10 +166,11 @@ const update_student_data = async (req, res, next) => {
     student.phoneNo = req.body.phoneNo || student.phoneNo;
     student.email = req.body.email || student.email;
     student.password = req.body.password || student.password;
-    student.confirmpassword = req.body.confirmpassword || student.confirmpassword;
-    student.profilePic = req.body.profilePic || student.profilePic;
+    student.confirmpassword =
+      req.body.confirmpassword || student.confirmpassword;
+    // student.profilePic = req.body.profilePic || student.profilePic;
     student.address = req.body.address || student.address;
-    student.department=req.body.department || student.department;
+    student.department = req.body.department || student.department;
 
     if (student.password !== student.confirmpassword) {
       throw new Error("Password and confirm password do not match");
@@ -161,6 +181,16 @@ const update_student_data = async (req, res, next) => {
     }
 
     const updatedstudent = await student.save();
+    const token=await updatedstudent.generateJWT();
+      if (req.cookies["Bearer_student"]) {
+        req.cookies["Bearer_student"] = "";
+      }
+      res.cookie("Bearer_student", token, {
+        path: "/",
+        expires: new Date(Date.now() + 1000 * 24*60*60), // 30 seconds
+        httpOnly: true,
+        sameSite: "lax",
+      });
     return res.status(200).json({
       name: updatedstudent.name,
       phoneNo: updatedstudent.phoneNo,
@@ -169,54 +199,154 @@ const update_student_data = async (req, res, next) => {
       address: updatedstudent.address,
       role: updatedstudent.role,
       hostel_name: updatedstudent.hostelAssign.hostel_name,
-      roomNo:updatedstudent.roomNo,
-      department:updatedstudent.department,
-      floorNo:updatedstudent.floorNo,
+      roomNo: updatedstudent.roomNo,
+      department: updatedstudent.department,
+      floorNo: updatedstudent.floorNo,
+      token:token,
     });
   } catch (error) {
-    console.log("error while update_warden_data");
+    console.log("error while update_student_data");
   }
 };
 
 
+// update student profile photo
+
+const update_student_profile_pic=async(req,res,next)=>{
+  try {
+    const upload = uploadPicture.single("profilePicture");
+
+    upload(req, res, async function (err) {
+      if (err) {
+        const error = new Error(
+          "An unknown error occured when uploading " + err.message
+        );
+        next(error);
+      } else {
+        // every thing went well
+        if (req.file) {
+          let filename;
+          let updatedstudent = await User.findById(req.student._id);
+          filename = updatedstudent.avatar;
+          // if we have already file exits then first we have to remove it then add new file
+          if (filename) {
+            fileRemover(filename);
+          }
+          updatedstudent.avatar = req.file.filename;
+          await updatedstudent.save();
+          const token=await updatedstudent.generateJWT();
+          if (req.cookies["Bearer_student"]) {
+            req.cookies["Bearer_student"] = "";
+          }
+          res.cookie("Bearer_student", token, {
+            path: "/",
+            expires: new Date(Date.now() + 1000 * 24*60*60), // 30 seconds
+            httpOnly: true,
+            sameSite: "lax",
+          });
+          return res.status(200).json({
+            name: updatedstudent.name,
+            phoneNo: updatedstudent.phoneNo,
+            email: updatedstudent.email,
+            profilePic: updatedstudent.profilePic,
+            address: updatedstudent.address,
+            role: updatedstudent.role,
+            hostel_name: updatedstudent.hostelAssign.hostel_name,
+            roomNo: updatedstudent.roomNo,
+            department: updatedstudent.department,
+            floorNo: updatedstudent.floorNo,
+            token:token,
+          });
+        } else {
+          // we have to delete image when nothing upload
+          let filename;
+          let updatedstudent = await User.findById(req.student._id);
+          filename = updatedstudent.avatar;
+          updatedstudent.avatar = "";
+          await updatedstudent.save();
+          fileRemover(filename);
+          const token=await updatedstudent.generateJWT();
+          if (req.cookies["Bearer_student"]) {
+            req.cookies["Bearer_student"] = "";
+          }
+          res.cookie("Bearer_student", token, {
+            path: "/",
+            expires: new Date(Date.now() + 1000 * 24*60*60), // 30 seconds
+            httpOnly: true,
+            sameSite: "lax",
+          });
+          return res.status(200).json({
+            name: updatedstudent.name,
+            phoneNo: updatedstudent.phoneNo,
+            email: updatedstudent.email,
+            profilePic: updatedstudent.profilePic,
+            address: updatedstudent.address,
+            role: updatedstudent.role,
+            hostel_name: updatedstudent.hostelAssign.hostel_name,
+            roomNo: updatedstudent.roomNo,
+            department: updatedstudent.department,
+            floorNo: updatedstudent.floorNo,
+            token:token,
+          });
+        }
+      }
+    });
+  } catch (error) {
+    console.log("error while update_student_profile_pic");
+    next(error);
+  }
+}
+
 // get all students for warden of same hostel as warden
 
-const get_all_students_for_wardens=async(data)=>{
+const get_all_students_for_wardens = async (data) => {
   try {
-    const {hostel_id}=data;
-    const getdata=await Student.find({hostelAssign:hostel_id});
+    const { hostel_id } = data;
+    const getdata = await Student.find({ hostelAssign: hostel_id });
     return getdata;
   } catch (error) {
     console.log("error while get_all_students_for_wardens");
   }
-}
-
+};
 
 // issue can be created by students
 
-const create_issue=async(req,res,next)=>{
+const create_issue = async (req, res, next) => {
   try {
-    const {student_id,issue,tags}=req.body;
-    const data={student_id:student_id,issue:issue,tags:tags};
-    await create_issue_by_student(data);
+    const {issue, tags } = req.body;
+    const student_id=req.student._id;
+    const data = { student_id: student_id, issue: issue, tags: tags };
+    if(await create_issue_by_student(data)===true)
+    {
+      return res.send("Issue created");
+    }
+    return res.send("something went wrong");
   } catch (error) {
     console.log("error while create_issue student side");
   }
-}
-
+};
 
 // get all complaints who logged in
 
-const get_complaints=async(req,res,next)=>{
+const get_complaints = async (req, res, next) => {
   try {
-    const data={student:req.student._id};
-    const getdata=await get_all_complaints_with_student(data);
+    const data = { student: req.student._id };
+    const getdata = await get_all_complaints_with_student(data);
     return res.status(200).json({
-      data:getdata
+      data: getdata,
     });
   } catch (error) {
     console.log("error while get_complaints");
   }
-}
+};
 
-module.exports={register_Student_From_Warden,loginStudent,get_all_students_for_wardens}
+module.exports = {
+  register_Student_From_Warden,
+  login,
+  getProfile,
+  update_student_data,
+  update_student_profile_pic,
+  get_all_students_for_wardens,
+  create_issue,
+  get_complaints
+};

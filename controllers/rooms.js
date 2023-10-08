@@ -1,9 +1,10 @@
 const Rooms = require("../models/Rooms");
-const {update_hostel_by_students_Count}=require("./hostel");
+const { update_hostel_by_students_Count } = require("../helper/hostel/update_hostel_by_students_Count");
 // after adding new hostel we have to create rooms for that hostel
 
 const add_rooms = async (data) => {
   try {
+    // console.log("Data is ", "add_rooms");
     // suppose I will get totalrooms which has value 50
     // in one room there can be 4 students so we have total 200 students
     // and we want in one floor there will be maximum 10 rooms
@@ -36,14 +37,15 @@ const add_rooms = async (data) => {
     await addroom.save();
   } catch (error) {
     console.log("error while adding rooms");
+    console.log(error.message);
   }
 };
 
-// get rooms of respective hostel
+// get rooms of respective hostel in which warden belongs
 
 const get_rooms_by_hostel_id = async (req, res, next) => {
   try {
-    const { hostel_id } = req.body;
+    const hostel_id = req.warden.hostelAssign;
     if (!hostel_id) {
       throw new Error("you do not eneter proper hostel id");
     }
@@ -88,7 +90,7 @@ const update_room_by_hostel_roomno = async (data) => {
     // (0*10)+(102-100)-1 ===  0+2-1  === 1
 
     let index = (floor - 1) * 10 + (roomno - floor * 100) - 1;
-    let update_capacity = room[index].capacity - 1;
+    let update_capacity = Math.max(rooms[index].capacity - 1,0);
 
     const update_room_data = await Rooms.updateOne(
       {
@@ -101,17 +103,23 @@ const update_room_by_hostel_roomno = async (data) => {
         },
       }
     );
-    await update_room_data.save();
+    // await update_room_data.save();
 
     //   now student get assign the room no.
     // so let's update available student in that specific hostel
 
     update_hostel_by_students_Count(data);
-    
   } catch (error) {
     console.log("error while update_room_by_hostel_roomno");
+    console.log(error.message);
   }
 };
 
 
-module.exports = { add_rooms, get_rooms_by_hostel_id,update_room_by_hostel_roomno };
+
+
+module.exports = {
+  add_rooms,
+  get_rooms_by_hostel_id,
+  update_room_by_hostel_roomno,
+};

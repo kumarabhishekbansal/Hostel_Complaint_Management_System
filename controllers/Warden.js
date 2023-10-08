@@ -1,7 +1,10 @@
 const Warden = require("../models/Warden");
 const { update_assign_task_care_taker } = require("./complaints");
-const { register_Student_From_Warden,get_all_students_for_wardens } = require("./Student");
-const {get_all_caretakers_for_warden}=require("./careTaker");
+const {
+  register_Student_From_Warden,
+  get_all_students_for_wardens,
+} = require("./Student");
+const { get_all_caretakers_for_warden } = require("./careTaker");
 // now officer will add the warden
 
 const add_warden_by_officer = async (data) => {
@@ -22,8 +25,12 @@ const add_warden_by_officer = async (data) => {
       role: role,
     });
     await addwarden.save();
+    return true;
   } catch (error) {
+
     console.log("error while add_warden_by_officer");
+    console.log(error.message);
+    return false;
   }
 };
 
@@ -36,7 +43,10 @@ const login = async (req, res, next) => {
     const { email, password } = req.body;
     let warden = await Warden.findOne({ email });
     if (!warden) {
-      throw new Error("EMAIL NOT FOUND");
+      // throw new Error("EMAIL NOT FOUND");
+      return res.status(400).json({
+        message:"EMAIL NOT FOUND"
+      })
     }
     if (await warden.comparePassword(password)) {
       const data = await Warden.findById(warden._id).populate([
@@ -45,16 +55,31 @@ const login = async (req, res, next) => {
           select: ["hostel_name"],
         },
       ]);
-      return res.status(200).json({
-        name: data[0].name,
-        phoneNo: data[0].phoneNo,
-        email: data[0].email,
-        profilePic: data[0].profilePic,
-        address: data[0].address,
-        role: data[0].role,
-        hostelAssign: data[0].hostelAssign,
-        hostel_name: data[0].hostelAssign.hostel_name,
+      const token = await data.generateJWT();
+      if (req.cookies["Bearer_Warden"]) {
+        req.cookies["Bearer_Warden"] = "";
+      }
+      res.cookie("Bearer_Warden", token, {
+        path: "/",
+        expires: new Date(Date.now() + 1000 * 24 * 60 * 60), // 30 seconds
+        httpOnly: true,
+        sameSite: "lax",
       });
+      return res.status(200).json({
+        name: data.name,
+        phoneNo: data.phoneNo,
+        email: data.email,
+        profilePic: data.profilePic,
+        address: data.address,
+        role: data.role,
+        hostelAssign: data.hostelAssign,
+        hostel_name: data.hostelAssign.hostel_name,
+        token: token,
+      });
+    }else{
+      return res.status(400).json({
+        message:"Wrong Password"
+      })
     }
   } catch (error) {
     console.log("error while login in warden");
@@ -64,14 +89,14 @@ const login = async (req, res, next) => {
 // get all wardens to officers so that officers can assign the wardens
 // to specific hostels
 
-const get_all_warden_for_officers=async()=>{
+const get_all_warden_for_officers = async () => {
   try {
-    const getdata=await Warden.find();
+    const getdata = await Warden.find({});
     return getdata;
   } catch (error) {
     console.log("error while get_all_warden_for_officers");
   }
-}
+};
 
 // now its turn to add students in database by warden
 
@@ -82,14 +107,28 @@ const add_students_by_warden = async (req, res, next) => {
       phoneNo,
       email,
       password,
-      hostelAssign,
       roomNo,
       department,
       floorNo,
       role,
     } = req.body;
-    const data = req.body;
-    await register_Student_From_Warden(data);
+    const hostelAssign=req.warden.hostelAssign;
+    const data = {
+      name,
+      phoneNo,
+      email,
+      password,
+      hostelAssign,
+      roomNo,
+      department,
+      floorNo,
+      role,
+    }
+    if(await register_Student_From_Warden(data)===true)
+    {
+      return res.send("student added");
+    }
+    return res.send("something wrong");
   } catch (error) {
     console.log("error while add_students_by_warden");
   }
@@ -105,18 +144,18 @@ const getProfile = async (req, res, next) => {
         select: ["hostel_name"],
       },
     ]);
-    if (data.length == 0) {
-      throw new Error("Nothing to show");
-    }
+    // if (data.length == 0) {
+    //   throw new Error("Nothing to show");
+    // }
     return res.status(200).json({
-      name: data[0].name,
-      phoneNo: data[0].phoneNo,
-      email: data[0].email,
-      profilePic: data[0].profilePic,
-      address: data[0].address,
-      role: data[0].role,
-      hostelAssign: data[0].hostelAssign,
-      hostel_name: data[0].hostelAssign.hostel_name,
+      name: data.name,
+      phoneNo: data.phoneNo,
+      email: data.email,
+      profilePic: data.profilePic,
+      address: data.address,
+      role: data.role,
+      hostelAssign: data.hostelAssign,
+      hostel_name: data.hostelAssign.hostel_name,
     });
   } catch (error) {
     console.log("error while getting warden profile");
@@ -141,7 +180,7 @@ const update_warden_data = async (req, res, next) => {
     warden.email = req.body.email || warden.email;
     warden.password = req.body.password || warden.password;
     warden.confirmpassword = req.body.confirmpassword || warden.confirmpassword;
-    warden.profilePic = req.body.profilePic || warden.profilePic;
+    // warden.profilePic = req.body.profilePic || warden.profilePic;
     warden.address = req.body.address || warden.address;
 
     if (warden.password !== warden.confirmpassword) {
@@ -153,6 +192,16 @@ const update_warden_data = async (req, res, next) => {
     }
 
     const updatedwarden = await warden.save();
+    const token = await updatedwarden.generateJWT();
+    if (req.cookies["Bearer_Warden"]) {
+      req.cookies["Bearer_Warden"] = "";
+    }
+    res.cookie("Bearer_Warden", token, {
+      path: "/",
+      expires: new Date(Date.now() + 1000 * 24 * 60 * 60), // 30 seconds
+      httpOnly: true,
+      sameSite: "lax",
+    });
     return res.status(200).json({
       name: updatedwarden.name,
       phoneNo: updatedwarden.phoneNo,
@@ -161,9 +210,91 @@ const update_warden_data = async (req, res, next) => {
       address: updatedwarden.address,
       role: updatedwarden.role,
       hostel_name: updatedwarden.hostelAssign.hostel_name,
+      token: token,
     });
   } catch (error) {
     console.log("error while update_warden_data");
+  }
+};
+
+// update warden profile photo
+
+const update_warden_profile_pic = async (req, res, next) => {
+  try {
+    const upload = uploadPicture.single("profilePicture");
+
+    upload(req, res, async function (err) {
+      if (err) {
+        const error = new Error(
+          "An unknown error occured when uploading " + err.message
+        );
+        next(error);
+      } else {
+        // every thing went well
+        if (req.file) {
+          let filename;
+          let updatedwarden = await User.findById(req.warden._id);
+          filename = updatedwarden.avatar;
+          // if we have already file exits then first we have to remove it then add new file
+          if (filename) {
+            fileRemover(filename);
+          }
+          updatedwarden.avatar = req.file.filename;
+          await updatedwarden.save();
+          const token = await updatedwarden.generateJWT();
+          if (req.cookies["Bearer_Warden"]) {
+            req.cookies["Bearer_Warden"] = "";
+          }
+          res.cookie("Bearer_Warden", token, {
+            path: "/",
+            expires: new Date(Date.now() + 1000 * 24 * 60 * 60), // 30 seconds
+            httpOnly: true,
+            sameSite: "lax",
+          });
+          return res.status(200).json({
+            name: updatedwarden.name,
+            phoneNo: updatedwarden.phoneNo,
+            email: updatedwarden.email,
+            profilePic: updatedwarden.profilePic,
+            address: updatedwarden.address,
+            role: updatedwarden.role,
+            hostel_name: updatedwarden.hostelAssign.hostel_name,
+            token: token,
+          });
+        } else {
+          // we have to delete image when nothing upload
+          let filename;
+          let updatedwarden = await User.findById(req.warden._id);
+          filename = updatedwarden.avatar;
+          updatedwarden.avatar = "";
+          await updatedwarden.save();
+          fileRemover(filename);
+          const token = await updatedwarden.generateJWT();
+          if (req.cookies["Bearer_Warden"]) {
+            req.cookies["Bearer_Warden"] = "";
+          }
+          res.cookie("Bearer_Warden", token, {
+            path: "/",
+            expires: new Date(Date.now() + 1000 * 24 * 60 * 60), // 30 seconds
+            httpOnly: true,
+            sameSite: "lax",
+          });
+          return res.status(200).json({
+            name: updatedwarden.name,
+            phoneNo: updatedwarden.phoneNo,
+            email: updatedwarden.email,
+            profilePic: updatedwarden.profilePic,
+            address: updatedwarden.address,
+            role: updatedwarden.role,
+            hostel_name: updatedwarden.hostelAssign.hostel_name,
+            token: token,
+          });
+        }
+      }
+    });
+  } catch (error) {
+    console.log("error while update_warden_profile_pic");
+    next(error);
   }
 };
 
@@ -181,41 +312,43 @@ const assign_care_taker_to_complaint = async (req, res, next) => {
 
 // show all care takers of same hostel whose warden resides
 
-const get_care_takers=async(req,res,next)=>{
+const get_care_takers = async (req, res, next) => {
   try {
-    const {hostel_id}=req.body;
-    const data={hostel_id:hostel_id};
-    const getdata=await get_all_caretakers_for_warden(data);
+    const hostel_id = req.warden.hostelAssign;
+    const data = { hostel_id: hostel_id };
+    const getdata = await get_all_caretakers_for_warden(data);
     return res.status(200).json({
-      data:getdata
+      data: getdata,
     });
   } catch (error) {
     console.log("error while get_care_takers warden");
   }
-}
-
+};
 
 // show all students to get list of all students whose hostel same as warden
 
-const get_students=async(req,res,next)=>{
+const get_students = async (req, res, next) => {
   try {
-    const {hostel_id}=req.body;
-    const data={hostel_id:hostel_id};
-    const getdata=await get_all_students_for_wardens(data);
+    const hostel_id = req.warden.hostelAssign;
+    const data = { hostel_id: hostel_id };
+    const getdata = await get_all_students_for_wardens(data);
     return res.status(200).json({
-      data:getdata
-    })
+      data: getdata,
+    });
   } catch (error) {
     console.log("error while get_students ");
   }
-}
-
+};
 
 module.exports = {
+  login,
   add_warden_by_officer,
   add_students_by_warden,
   getProfile,
   update_warden_data,
+  update_warden_profile_pic,
+  get_care_takers,
   assign_care_taker_to_complaint,
-  get_all_warden_for_officers
+  get_all_warden_for_officers,
+  get_students,
 };

@@ -8,6 +8,7 @@
 
 const mongoose = require("mongoose");
 const bcrypt=require("bcryptjs");
+const jwt=require("jsonwebtoken");
 const officerSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -28,7 +29,6 @@ const officerSchema = new mongoose.Schema({
   },
   confirmpassword: {
     type: String,
-    required: true,
   },
   profilePic: {
     type: String, // Store the file path or URL to the profile picture

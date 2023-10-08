@@ -34,9 +34,9 @@ const update_status_by_care_taker = async (data) => {
   }
 };
 
-// get all complaints
+// get all complaints for officer
 
-const get_all_complaints = async (req, res, next) => {
+const get_all_complaints_for_officer = async (req, res, next) => {
   try {
     const data = await Complaint.find().sort({
       createdDate: 1,
@@ -45,7 +45,7 @@ const get_all_complaints = async (req, res, next) => {
       data: data,
     });
   } catch (error) {
-    console.log("error while get_all_complaints");
+    console.log("error while get_all_complaints_for_officer");
   }
 };
 
@@ -55,7 +55,7 @@ const get_all_complaints = async (req, res, next) => {
 
 const get_all_complaints_with_status = async (req, res, next) => {
   try {
-    const { status } = req.body;
+    const { status } = req.params;
     const data = await Complaint.find({ status: status }).sort({
       createdDate: 1,
     });
@@ -71,7 +71,7 @@ const get_all_complaints_with_status = async (req, res, next) => {
 
 const get_all_complaints_with_tags = async (req, res, next) => {
   try {
-    const { tags } = req.body;
+    const { tags } = req.params;
     const data = await Complaint.find({ tags: tags }).sort({
       createdDate: 1,
     });
@@ -87,7 +87,7 @@ const get_all_complaints_with_tags = async (req, res, next) => {
 
 const get_all_complaints_with_tags_and_status = async (req, res, next) => {
   try {
-    const { status, tags } = req.body;
+    const { status, tags } = req.params;
     const data = await Complaint.find({ tags: tags, status: status }).sort({
       createdDate: 1,
     });
@@ -103,7 +103,7 @@ const get_all_complaints_with_tags_and_status = async (req, res, next) => {
 
 const get_all_complaints_with_caretaker = async (req, res, next) => {
   try {
-    const { assignedTo } = req.body;
+    const { assignedTo } = req.params;
     const data = await Complaint.find({ assignedTo: assignedTo }).sort({
       createdDate: 1,
     });
@@ -120,7 +120,7 @@ const get_all_complaints_with_caretaker = async (req, res, next) => {
 
 const get_all_complaints_with_caretaker_and_status = async (req, res, next) => {
   try {
-    const { assignedTo, status } = req.body;
+    const { assignedTo, status } = req.params;
     const data = await Complaint.find({
       assignedTo: assignedTo,
       status: status,
@@ -144,7 +144,7 @@ const get_all_complaints_with_caretaker_and_status_and_tags = async (
   next
 ) => {
   try {
-    const { assignedTo, status, tags } = req.body;
+    const { assignedTo, status, tags } = req.params;
     const data = await Complaint.find({
       assignedTo: assignedTo,
       status: status,
@@ -176,8 +176,10 @@ const create_issue_by_student = async (data) => {
       tags: tags,
     });
     await createissue.save();
+    return true;
   } catch (error) {
     console.log("error while create_issue_by_student");
+    return false;
   }
 };
 
@@ -195,9 +197,86 @@ const get_all_complaints_with_student = async (data) => {
   }
 };
 
+// get all complaints for wardens and caretakers
+// we can achieve this through following structure
+// warden/caretaker ----> gethostelcomplaint(warden_id/caretaker_id) ---> check this id.hostelassign matches with student.id.hostelassign
+
+// get all complaints for warden
+
+const get_all_complaints_for_warden = async (req, res, next) => {
+  try {
+    const hostel_id = req.warden.hostelAssign;
+    // now we have hostel id through
+    // nnow get all students complaints which are belongs to same hostel
+
+    const data = await Complaint.find()
+      .sort({
+        createdDate: 1,
+      })
+      .populate([
+        {
+          path: "student",
+          select: ["hostelAssign"],
+        },
+      ]);
+    var getdata = [];
+    if (data.length > 0) {
+      getdata = data.filter((val) => {
+        return val.student.hostelAssign === hostel_id;
+      });
+    }
+    return res.status(200).json({
+      data: getdata,
+    });
+  } catch (error) {
+    console.log("error while get_all_complaints_for_warden");
+  }
+};
+
+// get all complaints for warden
+
+const get_all_complaints_for_caretaker = async (req, res, next) => {
+  try {
+    const hostel_id = req.caretaker.hostelAssign;
+    // now we have hostel id through
+    // nnow get all students complaints which are belongs to same hostel
+
+    const data = await Complaint.find()
+      .sort({
+        createdDate: 1,
+      })
+      .populate([
+        {
+          path: "student",
+          select: ["hostelAssign"],
+        },
+      ]);
+    var getdata = [];
+    if (data.length > 0) {
+      getdata = data.filter((val) => {
+        return val.student.hostelAssign === hostel_id;
+      });
+    }
+    return res.status(200).json({
+      data: getdata,
+    });
+  } catch (error) {
+    console.log("error while get_all_complaints_for_caretaker");
+  }
+};
+
 module.exports = {
   update_assign_task_care_taker,
   update_status_by_care_taker,
+  get_all_complaints_for_officer,
+  get_all_complaints_with_status,
+  get_all_complaints_with_tags,
+  get_all_complaints_with_tags_and_status,
+  get_all_complaints_with_caretaker,
+  get_all_complaints_with_caretaker_and_status,
+  get_all_complaints_with_caretaker_and_status_and_tags,
   create_issue_by_student,
   get_all_complaints_with_student,
+  get_all_complaints_for_warden,
+  get_all_complaints_for_caretaker,
 };

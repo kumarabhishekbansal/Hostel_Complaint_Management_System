@@ -8,7 +8,8 @@
 // Hostel assign which take reference to Hostel Model
 
 const mongoose = require('mongoose');
-
+const jwt=require("jsonwebtoken");
+const bcrypt=require("bcryptjs");
 const wardenSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -29,7 +30,6 @@ const wardenSchema = new mongoose.Schema({
   },
   confirmpassword: {
     type: String,
-    required: true,
   },
   profilePic: {
     type: String, // Store the file path or URL to the profile picture

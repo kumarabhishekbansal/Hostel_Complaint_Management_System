@@ -8,7 +8,7 @@ const errorResponseHandling=(err,req,res,next)=>{
 
 const invalidPathHandler=(req,res,next)=>{
     let error=new Error("Invalid Path");
-    err.statusCode=404;
+    error.statusCode=404;
     next(error);
 }
 

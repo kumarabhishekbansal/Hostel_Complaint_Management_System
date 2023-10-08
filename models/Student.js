@@ -12,6 +12,7 @@
 // Confirm password
 
 const mongoose = require('mongoose');
+const jwt=require("jsonwebtoken");
 const bcrypt=require("bcryptjs");
 const studentSchema = new mongoose.Schema({
   name: {
@@ -74,7 +75,7 @@ studentSchema.pre("save", async function (next) {
 
 studentSchema.methods.generateJWT = async function () {
   return await jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
-    expiresIn: "30d",
+    expiresIn: "1d",
   });
 };
 

@@ -9,7 +9,8 @@
 // Hostel assign which take reference to Hostel Model
 
 const mongoose = require('mongoose');
-
+const jwt=require("jsonwebtoken");
+const bcrypt=require("bcryptjs");
 const caretakerSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -30,7 +31,6 @@ const caretakerSchema = new mongoose.Schema({
   },
   confirmpassword: {
     type: String,
-    required: true,
   },
   profilePic: {
     type: String, // Store the file path or URL to the profile picture
@@ -48,6 +48,25 @@ const caretakerSchema = new mongoose.Schema({
     default:"caretaker"
   }
 });
+
+caretakerSchema.pre("save", async function (next) {
+  if (this.isModified("password")) {
+    this.password = await bcrypt.hash(this.password, 10);
+    this.confirmpassword=this.password;
+    return next();
+  }
+  return next();
+});
+
+caretakerSchema.methods.generateJWT = async function () {
+  return await jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+    expiresIn: "30d",
+  });
+};
+
+caretakerSchema.methods.comparePassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
 
 const Caretaker = mongoose.model('Caretaker', caretakerSchema);
 
