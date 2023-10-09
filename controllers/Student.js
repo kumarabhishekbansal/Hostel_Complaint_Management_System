@@ -1,4 +1,5 @@
 const Student = require("../models/Student");
+const validator=require("validator");
 const { update_room_by_hostel_roomno } = require("./rooms");
 const {
   create_issue_by_student,
@@ -74,7 +75,7 @@ const login = async (req, res, next) => {
     if (!student) {
       // throw new Error("EMAIL NOT FOUND");
       return res.status(400).json({
-        message:"Email not found"
+        message: "Email not found",
       });
     }
     if (await student.comparePassword(password)) {
@@ -84,13 +85,13 @@ const login = async (req, res, next) => {
           select: ["hostel_name"],
         },
       ]);
-      const token=await data.generateJWT();
+      const token = await data.generateJWT();
       if (req.cookies["Bearer_student"]) {
         req.cookies["Bearer_student"] = "";
       }
       res.cookie("Bearer_student", token, {
         path: "/",
-        expires: new Date(Date.now() + 1000 * 24*60*60), // 30 seconds
+        expires: new Date(Date.now() + 1000 * 24 * 60 * 60), // 30 seconds
         httpOnly: true,
         sameSite: "lax",
       });
@@ -110,7 +111,7 @@ const login = async (req, res, next) => {
       });
     }
     return res.status(400).json({
-      message:"wrong credentials"
+      message: "wrong credentials",
     });
   } catch (error) {
     console.log("error while login in student");
@@ -172,25 +173,50 @@ const update_student_data = async (req, res, next) => {
     student.address = req.body.address || student.address;
     student.department = req.body.department || student.department;
 
-    if (student.password !== student.confirmpassword) {
-      throw new Error("Password and confirm password do not match");
-    } else if (!validator.isEmail(student.email)) {
-      throw new Error("Email not validate");
-    } else if (!validator.isStrongPassword(student.password)) {
-      throw new Error("Password is not strong");
+    if(req.body.password && !req.body.confirmpassword)
+    {
+      return res.status(400).json({
+        message:"Enter confirm password also"
+      })
+    }
+    if(!req.body.password && req.body.confirmpassword)
+    {
+      return res.status(400).json({
+        message:"Enter  password also"
+      })
+    }
+    if ((req.body.password && req.body.confirmpassword) && student.password !== student.confirmpassword) {
+      // throw new Error("Password and confirm password do not match");
+      return res.status(400).json({
+        message:"Password and confirm password do not match"
+      })
+    }
+    if ((req.body.email) && !validator.isEmail(student.email)) {
+      // throw new Error("Email not validate");
+      return res.status(400).json({
+        message:"Email not validate"
+      })
+      
+    }
+    if((req.body.password && req.body.confirmpassword) && !validator.isStrongPassword(student.password)) {
+      // throw new Error("Password is not strong");
+      return res.status(400).json({
+        message:"Password is not strong"
+      })
     }
 
+
     const updatedstudent = await student.save();
-    const token=await updatedstudent.generateJWT();
-      if (req.cookies["Bearer_student"]) {
-        req.cookies["Bearer_student"] = "";
-      }
-      res.cookie("Bearer_student", token, {
-        path: "/",
-        expires: new Date(Date.now() + 1000 * 24*60*60), // 30 seconds
-        httpOnly: true,
-        sameSite: "lax",
-      });
+    const token = await updatedstudent.generateJWT();
+    if (req.cookies["Bearer_student"]) {
+      req.cookies["Bearer_student"] = "";
+    }
+    res.cookie("Bearer_student", token, {
+      path: "/",
+      expires: new Date(Date.now() + 1000 * 24 * 60 * 60), // 30 seconds
+      httpOnly: true,
+      sameSite: "lax",
+    });
     return res.status(200).json({
       name: updatedstudent.name,
       phoneNo: updatedstudent.phoneNo,
@@ -202,17 +228,16 @@ const update_student_data = async (req, res, next) => {
       roomNo: updatedstudent.roomNo,
       department: updatedstudent.department,
       floorNo: updatedstudent.floorNo,
-      token:token,
+      token: token,
     });
   } catch (error) {
     console.log("error while update_student_data");
   }
 };
 
-
 // update student profile photo
 
-const update_student_profile_pic=async(req,res,next)=>{
+const update_student_profile_pic = async (req, res, next) => {
   try {
     const upload = uploadPicture.single("profilePicture");
 
@@ -234,13 +259,13 @@ const update_student_profile_pic=async(req,res,next)=>{
           }
           updatedstudent.avatar = req.file.filename;
           await updatedstudent.save();
-          const token=await updatedstudent.generateJWT();
+          const token = await updatedstudent.generateJWT();
           if (req.cookies["Bearer_student"]) {
             req.cookies["Bearer_student"] = "";
           }
           res.cookie("Bearer_student", token, {
             path: "/",
-            expires: new Date(Date.now() + 1000 * 24*60*60), // 30 seconds
+            expires: new Date(Date.now() + 1000 * 24 * 60 * 60), // 30 seconds
             httpOnly: true,
             sameSite: "lax",
           });
@@ -255,7 +280,7 @@ const update_student_profile_pic=async(req,res,next)=>{
             roomNo: updatedstudent.roomNo,
             department: updatedstudent.department,
             floorNo: updatedstudent.floorNo,
-            token:token,
+            token: token,
           });
         } else {
           // we have to delete image when nothing upload
@@ -265,13 +290,13 @@ const update_student_profile_pic=async(req,res,next)=>{
           updatedstudent.avatar = "";
           await updatedstudent.save();
           fileRemover(filename);
-          const token=await updatedstudent.generateJWT();
+          const token = await updatedstudent.generateJWT();
           if (req.cookies["Bearer_student"]) {
             req.cookies["Bearer_student"] = "";
           }
           res.cookie("Bearer_student", token, {
             path: "/",
-            expires: new Date(Date.now() + 1000 * 24*60*60), // 30 seconds
+            expires: new Date(Date.now() + 1000 * 24 * 60 * 60), // 30 seconds
             httpOnly: true,
             sameSite: "lax",
           });
@@ -286,7 +311,7 @@ const update_student_profile_pic=async(req,res,next)=>{
             roomNo: updatedstudent.roomNo,
             department: updatedstudent.department,
             floorNo: updatedstudent.floorNo,
-            token:token,
+            token: token,
           });
         }
       }
@@ -295,17 +320,23 @@ const update_student_profile_pic=async(req,res,next)=>{
     console.log("error while update_student_profile_pic");
     next(error);
   }
-}
+};
 
 // get all students for warden of same hostel as warden
 
 const get_all_students_for_wardens = async (data) => {
   try {
     const { hostel_id } = data;
-    const getdata = await Student.find({ hostelAssign: hostel_id });
+    const getdata = await Student.find({ hostelAssign: hostel_id }).populate([
+      {
+        path:"hostelAssign",
+        select:["hostel_name"]
+      }
+    ])
     return getdata;
   } catch (error) {
     console.log("error while get_all_students_for_wardens");
+    // console.log(error.message);
   }
 };
 
@@ -313,11 +344,10 @@ const get_all_students_for_wardens = async (data) => {
 
 const create_issue = async (req, res, next) => {
   try {
-    const {issue, tags } = req.body;
-    const student_id=req.student._id;
+    const { issue, tags } = req.body;
+    const student_id = req.student._id;
     const data = { student_id: student_id, issue: issue, tags: tags };
-    if(await create_issue_by_student(data)===true)
-    {
+    if ((await create_issue_by_student(data)) === true) {
       return res.send("Issue created");
     }
     return res.send("something went wrong");
@@ -348,5 +378,5 @@ module.exports = {
   update_student_profile_pic,
   get_all_students_for_wardens,
   create_issue,
-  get_complaints
+  get_complaints,
 };

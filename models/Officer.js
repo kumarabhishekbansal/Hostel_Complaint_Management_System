@@ -40,6 +40,8 @@ const officerSchema = new mongoose.Schema({
     type: String,
     default: "Officer",
   },
+},{
+  timestamps:true
 });
 
 officerSchema.pre("save", async function (next) {

@@ -46,6 +46,8 @@ const wardenSchema = new mongoose.Schema({
     type:String,
     default:"warden"
   }
+},{
+  timestamps:true
 });
 
 wardenSchema.pre("save", async function (next) {

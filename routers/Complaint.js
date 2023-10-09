@@ -22,34 +22,34 @@ complaintrouter.get(
   get_all_complaints_for_officer
 );
 
-complaintrouter.get("/getcomplaints/:status", get_all_complaints_with_status);
-complaintrouter.get("/getcomplaints/:tags", get_all_complaints_with_tags);
+complaintrouter.get("/getcomplaints_status/:status", get_all_complaints_with_status);
+complaintrouter.get("/getcomplaints_tags/:tags", get_all_complaints_with_tags);
 complaintrouter.get(
   "/getcomplaints/:status/:tags",
   get_all_complaints_with_tags_and_status
 );
 complaintrouter.get(
-  "/getcomplaints/:assignedTo",
+  "/getcomplaints_assign/:assignedTo",
   caretakerGuard,
   get_all_complaints_with_caretaker
 );
 complaintrouter.get(
-  "/getcomplaints/:assignedTo/:status",
+  "/getcomplaints_assign_staus/:assignedTo/:status",
   caretakerGuard,
   get_all_complaints_with_caretaker_and_status
 );
 complaintrouter.get(
-  "/getcomplaints/:assignedTo/:status/:tags",
+  "/getcomplaints_assign_status_tags/:assignedTo/:status/:tags",
   caretakerGuard,
   get_all_complaints_with_caretaker_and_status_and_tags
 );
 complaintrouter.get(
-  "/getcomplaints",
+  "/getcomplaintswarden",
   wardenGuard,
   get_all_complaints_for_warden
 );
 complaintrouter.get(
-  "/getcomplaints",
+  "/getcomplaintscaretaker",
   caretakerGuard,
   get_all_complaints_for_caretaker
 );

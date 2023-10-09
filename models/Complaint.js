@@ -34,7 +34,10 @@ const complaintSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Caretaker', // Reference to the Caretaker model
   },
-});
+},{
+  timestamps:true
+}
+);
 
 const Complaint = mongoose.model('Complaint', complaintSchema);
 

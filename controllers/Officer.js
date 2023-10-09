@@ -146,12 +146,36 @@ const update_officer_data = async (req, res, next) => {
     // officer.profilePic = req.body.profilePic || officer.profilePic;
     officer.address = req.body.address || officer.address;
 
-    if (officer.password !== officer.confirmpassword) {
-      throw new Error("Password and confirm password do not match");
-    } else if (!validator.isEmail(officer.email)) {
-      throw new Error("Email not validate");
-    } else if (!validator.isStrongPassword(officer.password)) {
-      throw new Error("Password is not strong");
+    if(req.body.password && !req.body.confirmpassword)
+    {
+      return res.status(400).json({
+        message:"Enter confirm password also"
+      })
+    }
+    if(!req.body.password && req.body.confirmpassword)
+    {
+      return res.status(400).json({
+        message:"Enter  password also"
+      })
+    }
+    if ((req.body.password && req.body.confirmpassword) && officer.password !== officer.confirmpassword) {
+      // throw new Error("Password and confirm password do not match");
+      return res.status(400).json({
+        message:"Password and confirm password do not match"
+      })
+    }
+    if ((req.body.email) && !validator.isEmail(officer.email)) {
+      // throw new Error("Email not validate");
+      return res.status(400).json({
+        message:"Email not validate"
+      })
+      
+    }
+    if((req.body.password && req.body.confirmpassword) && !validator.isStrongPassword(officer.password)) {
+      // throw new Error("Password is not strong");
+      return res.status(400).json({
+        message:"Password is not strong"
+      })
     }
 
     const updatedofficer = await officer.save();
@@ -176,6 +200,7 @@ const update_officer_data = async (req, res, next) => {
     });
   } catch (error) {
     console.log("error while update_officer_data");
+    console.log(error.message);
   }
 };
 

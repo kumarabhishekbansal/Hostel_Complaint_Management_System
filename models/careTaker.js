@@ -47,6 +47,8 @@ const caretakerSchema = new mongoose.Schema({
     type:String,
     default:"caretaker"
   }
+},{
+  timestamps:true
 });
 
 caretakerSchema.pre("save", async function (next) {

@@ -62,6 +62,8 @@ const studentSchema = new mongoose.Schema({
     type:String,
     default:"student"
   }
+},{
+  timestamps:true
 });
 
 studentSchema.pre("save", async function (next) {

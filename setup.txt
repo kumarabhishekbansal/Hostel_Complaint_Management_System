@@ -1,0 +1,26 @@
+First -> 
+	login with officer
+	add hostels
+second ->
+	add warden and add care taker
+third -> login warden and login care taker
+	-> login warden to get cookie
+fourth ->  add students
+
+fifth -> login student
+
+-> create issue
+
+-> login warden to get cookie
+
+-> assign issue to caretaker
+
+-> login as caretaker for cookie
+
+->now update issue status from caretaker
+
+->get all complaints by all methods
+
+-> get profile of officers,wardens,caretakers,students
+
+-> update profile of officers,wardens,caretakers,students

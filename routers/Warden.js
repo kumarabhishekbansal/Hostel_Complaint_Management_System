@@ -6,7 +6,8 @@ const {
   update_warden_data,
   update_warden_profile_pic,
   get_care_takers,
-  get_students
+  get_students,
+  assign_care_taker_to_complaint
 } = require("../controllers/Warden");
 const {wardenGuard } = require("../middlewares/authmiddleware");
 wardenrouter.post("/login", login);
@@ -17,6 +18,7 @@ wardenrouter.post(
 );
 wardenrouter.get("/getprofile",  wardenGuard, getProfile);
 wardenrouter.put("/updateprofile",wardenGuard,update_warden_data);
+wardenrouter.put("/assigncaretaker",wardenGuard,assign_care_taker_to_complaint);
 wardenrouter.put("/updateprofilepic",wardenGuard,update_warden_profile_pic);
 wardenrouter.get("/getcaretakers",wardenGuard,get_care_takers);
 wardenrouter.get("/getstudents",wardenGuard,get_students);

@@ -1,4 +1,5 @@
 const careTaker = require("../models/careTaker");
+const validator=require("validator");
 const { update_status_by_care_taker } = require("./complaints");
 // now officer will add the warden
 
@@ -35,7 +36,10 @@ const login = async (req, res, next) => {
     const { email, password } = req.body;
     let caretaker = await careTaker.findOne({ email });
     if (!caretaker) {
-      throw new Error("EMAIL NOT FOUND");
+      // throw new Error("EMAIL NOT FOUND");
+      return res.status(400).json({
+        message:"Email not found"
+      })
     }
     if (await caretaker.comparePassword(password)) {
       const data = await careTaker.findById(caretaker._id).populate([
@@ -66,6 +70,9 @@ const login = async (req, res, next) => {
         token:token,
       });
     }
+    return res.status(400).json({
+      message:"Wrong credentials"
+    })
   } catch (error) {
     console.log("error while login in caretaker");
   }
@@ -146,13 +153,38 @@ const update_caretaker_data = async (req, res, next) => {
     // caretaker.profilePic = req.body.profilePic || caretaker.profilePic;
     caretaker.address = req.body.address || caretaker.address;
 
-    if (caretaker.password !== caretaker.confirmpassword) {
-      throw new Error("Password and confirm password do not match");
-    } else if (!validator.isEmail(caretaker.email)) {
-      throw new Error("Email not validate");
-    } else if (!validator.isStrongPassword(caretaker.password)) {
-      throw new Error("Password is not strong");
+    if(req.body.password && !req.body.confirmpassword)
+    {
+      return res.status(400).json({
+        message:"Enter confirm password also"
+      })
     }
+    if(!req.body.password && req.body.confirmpassword)
+    {
+      return res.status(400).json({
+        message:"Enter  password also"
+      })
+    }
+    if ((req.body.password && req.body.confirmpassword) && caretaker.password !== caretaker.confirmpassword) {
+      // throw new Error("Password and confirm password do not match");
+      return res.status(400).json({
+        message:"Password and confirm password do not match"
+      })
+    }
+    if ((req.body.email) && !validator.isEmail(caretaker.email)) {
+      // throw new Error("Email not validate");
+      return res.status(400).json({
+        message:"Email not validate"
+      })
+      
+    }
+    if((req.body.password && req.body.confirmpassword) && !validator.isStrongPassword(caretaker.password)) {
+      // throw new Error("Password is not strong");
+      return res.status(400).json({
+        message:"Password is not strong"
+      })
+    }
+
 
     const updatedcaretaker = await caretaker.save();
     const token=await updatedcaretaker.generateJWT();
@@ -267,7 +299,11 @@ const update_caretaker_profile_pic=async(req,res,next)=>{
 const update_status_complaint = async (req, res, next) => {
   try {
     const data = req.body;
-    await update_status_by_care_taker(data);
+    if(await update_status_by_care_taker(data)===true)
+    {
+      return res.send("status updated");
+    }
+    return res.send("spmething went wrong");
   } catch (error) {
     console.log("error while update_status_complaint by care taker");
   }

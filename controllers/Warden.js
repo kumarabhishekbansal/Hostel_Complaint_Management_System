@@ -1,4 +1,5 @@
 const Warden = require("../models/Warden");
+const validator=require("validator");
 const { update_assign_task_care_taker } = require("./complaints");
 const {
   register_Student_From_Warden,
@@ -182,13 +183,36 @@ const update_warden_data = async (req, res, next) => {
     warden.confirmpassword = req.body.confirmpassword || warden.confirmpassword;
     // warden.profilePic = req.body.profilePic || warden.profilePic;
     warden.address = req.body.address || warden.address;
-
-    if (warden.password !== warden.confirmpassword) {
-      throw new Error("Password and confirm password do not match");
-    } else if (!validator.isEmail(warden.email)) {
-      throw new Error("Email not validate");
-    } else if (!validator.isStrongPassword(warden.password)) {
-      throw new Error("Password is not strong");
+    if(req.body.password && !req.body.confirmpassword)
+    {
+      return res.status(400).json({
+        message:"Enter confirm password also"
+      })
+    }
+    if(!req.body.password && req.body.confirmpassword)
+    {
+      return res.status(400).json({
+        message:"Enter  password also"
+      })
+    }
+    if ((req.body.password && req.body.confirmpassword) && warden.password !== warden.confirmpassword) {
+      // throw new Error("Password and confirm password do not match");
+      return res.status(400).json({
+        message:"Password and confirm password do not match"
+      })
+    }
+    if ((req.body.email) && !validator.isEmail(warden.email)) {
+      // throw new Error("Email not validate");
+      return res.status(400).json({
+        message:"Email not validate"
+      })
+      
+    }
+    if((req.body.password && req.body.confirmpassword) && !validator.isStrongPassword(warden.password)) {
+      // throw new Error("Password is not strong");
+      return res.status(400).json({
+        message:"Password is not strong"
+      })
     }
 
     const updatedwarden = await warden.save();
@@ -214,6 +238,7 @@ const update_warden_data = async (req, res, next) => {
     });
   } catch (error) {
     console.log("error while update_warden_data");
+    // console.log(error.message);
   }
 };
 
@@ -304,7 +329,11 @@ const update_warden_profile_pic = async (req, res, next) => {
 const assign_care_taker_to_complaint = async (req, res, next) => {
   try {
     const data = req.body;
-    await update_assign_task_care_taker(data);
+    if(await update_assign_task_care_taker(data)===true)
+    {
+      return res.send("care taker assignes success");
+    }
+    return res.send("csomething went wrong");
   } catch (error) {
     console.log("error while assign_care_taker_to_complaint");
   }
