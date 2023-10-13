@@ -1,5 +1,4 @@
 const Warden = require("../models/Warden");
-const validator=require("validator");
 const { update_assign_task_care_taker } = require("./complaints");
 const {
   register_Student_From_Warden,
@@ -75,6 +74,8 @@ const login = async (req, res, next) => {
         role: data.role,
         hostelAssign: data.hostelAssign,
         hostel_name: data.hostelAssign.hostel_name,
+        gender:data.gender,
+        dob:data.role.dob,
         token: token,
       });
     }else{
@@ -139,6 +140,7 @@ const add_students_by_warden = async (req, res, next) => {
 
 const getProfile = async (req, res, next) => {
   try {
+    // console.log("warden getprofile ",req.warden);
     const data = await Warden.findById(req.warden._id).populate([
       {
         path: "hostelAssign",
@@ -157,6 +159,8 @@ const getProfile = async (req, res, next) => {
       role: data.role,
       hostelAssign: data.hostelAssign,
       hostel_name: data.hostelAssign.hostel_name,
+      gender:data.gender,
+      dob:data.dob,
     });
   } catch (error) {
     console.log("error while getting warden profile");
@@ -167,6 +171,7 @@ const getProfile = async (req, res, next) => {
 
 const update_warden_data = async (req, res, next) => {
   try {
+    req.body=req?.body?.wardendata;
     let warden = await Warden.findById(req.warden._id).populate([
       {
         path: "hostelAssign",
@@ -181,39 +186,41 @@ const update_warden_data = async (req, res, next) => {
     warden.email = req.body.email || warden.email;
     warden.password = req.body.password || warden.password;
     warden.confirmpassword = req.body.confirmpassword || warden.confirmpassword;
-    // warden.profilePic = req.body.profilePic || warden.profilePic;
+    warden.profilePic = req.body.profilePic || warden.profilePic;
     warden.address = req.body.address || warden.address;
-    if(req.body.password && !req.body.confirmpassword)
-    {
-      return res.status(400).json({
-        message:"Enter confirm password also"
-      })
-    }
-    if(!req.body.password && req.body.confirmpassword)
-    {
-      return res.status(400).json({
-        message:"Enter  password also"
-      })
-    }
-    if ((req.body.password && req.body.confirmpassword) && warden.password !== warden.confirmpassword) {
-      // throw new Error("Password and confirm password do not match");
-      return res.status(400).json({
-        message:"Password and confirm password do not match"
-      })
-    }
-    if ((req.body.email) && !validator.isEmail(warden.email)) {
-      // throw new Error("Email not validate");
-      return res.status(400).json({
-        message:"Email not validate"
-      })
+    warden.gender = req.body.gender || warden.gender;
+    warden.dob = req.body.dob || warden.dob;
+    // if(req.body.password && !req.body.confirmpassword)
+    // {
+    //   return res.status(400).json({
+    //     message:"Enter confirm password also"
+    //   })
+    // }
+    // if(!req.body.password && req.body.confirmpassword)
+    // {
+    //   return res.status(400).json({
+    //     message:"Enter  password also"
+    //   })
+    // }
+    // if ((req.body.password && req.body.confirmpassword) && warden.password !== warden.confirmpassword) {
+    //   // throw new Error("Password and confirm password do not match");
+    //   return res.status(400).json({
+    //     message:"Password and confirm password do not match"
+    //   })
+    // }
+    // if ((req.body.email) && !validator.isEmail(warden.email)) {
+    //   // throw new Error("Email not validate");
+    //   return res.status(400).json({
+    //     message:"Email not validate"
+    //   })
       
-    }
-    if((req.body.password && req.body.confirmpassword) && !validator.isStrongPassword(warden.password)) {
-      // throw new Error("Password is not strong");
-      return res.status(400).json({
-        message:"Password is not strong"
-      })
-    }
+    // }
+    // if((req.body.password && req.body.confirmpassword) && !validator.isStrongPassword(warden.password)) {
+    //   // throw new Error("Password is not strong");
+    //   return res.status(400).json({
+    //     message:"Password is not strong"
+    //   })
+    // }
 
     const updatedwarden = await warden.save();
     const token = await updatedwarden.generateJWT();
@@ -234,11 +241,13 @@ const update_warden_data = async (req, res, next) => {
       address: updatedwarden.address,
       role: updatedwarden.role,
       hostel_name: updatedwarden.hostelAssign.hostel_name,
+      gender:updatedwarden.gender,
+      dob:updatedwarden.role.dob,
       token: token,
     });
   } catch (error) {
     console.log("error while update_warden_data");
-    // console.log(error.message);
+    console.log(error.message);
   }
 };
 

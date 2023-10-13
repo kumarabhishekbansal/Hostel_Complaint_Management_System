@@ -45,6 +45,14 @@ const wardenSchema = new mongoose.Schema({
   role:{
     type:String,
     default:"warden"
+  },
+  gender:{
+    type:String,
+    default:""
+  },
+  dob:{
+    type:Date,
+    default:""
   }
 },{
   timestamps:true

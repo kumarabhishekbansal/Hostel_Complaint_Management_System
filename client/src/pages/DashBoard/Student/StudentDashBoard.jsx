@@ -4,37 +4,19 @@ import DashBoardCards from "../../../components/cards/DashBoardCards";
 import { images } from "../../../constants";
 import BorderLine from "../../../helper/BorderLine";
 import { AiOutlineUsergroupAdd } from "react-icons/ai";
-import {GrAddCircle} from "react-icons/gr"
-import {BiSolidShow} from "react-icons/bi";
-import {GiEyeTarget} from "react-icons/gi";
-import {FaReadme} from "react-icons/fa";
-import {BsBuildingAdd} from "react-icons/bs";
-import {PiStudentBold} from "react-icons/pi";
-const OfficerDashBoard = ({header,profile_pic}) => {
+import { GrAddCircle, GrContact } from "react-icons/gr";
+import { BiSolidShow } from "react-icons/bi";
+import { GiEyeTarget } from "react-icons/gi";
+import { FaReadme } from "react-icons/fa";
+import { BsBuildingAdd, BsPenFill } from "react-icons/bs";
+import { PiReadCvLogoFill, PiStudentBold } from "react-icons/pi";
+const StudentDashBoard = ({ header, profile_pic }) => {
   return (
     <section className=" mx-auto">
       <DashBoard header={header} profile_pic={profile_pic} />
       <div className="h-screen bg-slate-800">
         <BorderLine header={"Your Services"} />
         <div className="flex flex-col md:flex-row bg-slate-800 mt-10 gap-10 justify-center items-center flex-wrap mb-4">
-          <DashBoardCards
-            image={images.add_warden}
-            alt={"Add warden"}
-            content={"Add or Update Warden"}
-            link={"/"}
-            linkcontent={"Add"}
-            icon=<AiOutlineUsergroupAdd />
-          />
-
-          <DashBoardCards
-            image={images.add_care_taker}
-            alt={"Add caretaker"}
-            content={"Add or Update CareTaker"}
-            link={"/"}
-            linkcontent={"Add"}
-            icon=<GrAddCircle />
-          />
-
           <DashBoardCards
             image={images.complaints}
             alt={"complaints"}
@@ -63,21 +45,30 @@ const OfficerDashBoard = ({header,profile_pic}) => {
           />
 
           <DashBoardCards
-            image={images.add_hostels}
-            alt={"Add Hostels"}
-            content={"Add or update Hostels"}
+            image={images.complaints}
+            alt={"Create an issue"}
+            content={"Create an issue"}
             link={"/"}
-            linkcontent={"Add"}
-            icon=<BsBuildingAdd />
+            linkcontent={"Create"}
+            icon=<BsPenFill />
           />
 
           <DashBoardCards
             image={images.students}
-            alt={"Show all students"}
-            content={"Show all students"}
+            alt={"Show all complaints respective to room"}
+            content={"Show all complaints respective to room"}
             link={"/"}
-            linkcontent={"Add"}
-            icon=<PiStudentBold />
+            linkcontent={"show"}
+            icon=<PiReadCvLogoFill />
+          />
+
+          <DashBoardCards
+            image={images.bgcontact_2}
+            alt={"contact us"}
+            content={"Contact Us"}
+            link={"/"}
+            linkcontent={"contact"}
+            icon=<GrContact />
           />
         </div>
       </div>
@@ -85,4 +76,4 @@ const OfficerDashBoard = ({header,profile_pic}) => {
   );
 };
 
-export default OfficerDashBoard;
+export default StudentDashBoard;

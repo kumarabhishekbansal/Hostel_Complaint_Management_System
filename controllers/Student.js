@@ -107,6 +107,8 @@ const login = async (req, res, next) => {
         roomNo: data.roomNo,
         department: data.department,
         floorNo: data.floorNo,
+        gender:data.gender,
+        dob:data.dob,
         token: token,
       });
     }
@@ -144,6 +146,8 @@ const getProfile = async (req, res, next) => {
       roomNo: data.roomNo,
       department: data.department,
       floorNo: data.floorNo,
+      gender:data.gender,
+      dob:data.dob,
     });
   } catch (error) {
     console.log("error while getting student profile");
@@ -154,6 +158,7 @@ const getProfile = async (req, res, next) => {
 
 const update_student_data = async (req, res, next) => {
   try {
+    req.body=req.body?.studentdata
     let student = await Student.findById(req.student._id).populate([
       {
         path: "hostelAssign",
@@ -169,41 +174,42 @@ const update_student_data = async (req, res, next) => {
     student.password = req.body.password || student.password;
     student.confirmpassword =
       req.body.confirmpassword || student.confirmpassword;
-    // student.profilePic = req.body.profilePic || student.profilePic;
+    student.profilePic = req.body.profilePic || student.profilePic;
     student.address = req.body.address || student.address;
     student.department = req.body.department || student.department;
-
-    if(req.body.password && !req.body.confirmpassword)
-    {
-      return res.status(400).json({
-        message:"Enter confirm password also"
-      })
-    }
-    if(!req.body.password && req.body.confirmpassword)
-    {
-      return res.status(400).json({
-        message:"Enter  password also"
-      })
-    }
-    if ((req.body.password && req.body.confirmpassword) && student.password !== student.confirmpassword) {
-      // throw new Error("Password and confirm password do not match");
-      return res.status(400).json({
-        message:"Password and confirm password do not match"
-      })
-    }
-    if ((req.body.email) && !validator.isEmail(student.email)) {
-      // throw new Error("Email not validate");
-      return res.status(400).json({
-        message:"Email not validate"
-      })
+    student.gender = req.body.gender || student.gender;
+    student.dob = req.body.dob || student.dob;
+    // if(req.body.password && !req.body.confirmpassword)
+    // {
+    //   return res.status(400).json({
+    //     message:"Enter confirm password also"
+    //   })
+    // }
+    // if(!req.body.password && req.body.confirmpassword)
+    // {
+    //   return res.status(400).json({
+    //     message:"Enter  password also"
+    //   })
+    // }
+    // if ((req.body.password && req.body.confirmpassword) && student.password !== student.confirmpassword) {
+    //   // throw new Error("Password and confirm password do not match");
+    //   return res.status(400).json({
+    //     message:"Password and confirm password do not match"
+    //   })
+    // }
+    // if ((req.body.email) && !validator.isEmail(student.email)) {
+    //   // throw new Error("Email not validate");
+    //   return res.status(400).json({
+    //     message:"Email not validate"
+    //   })
       
-    }
-    if((req.body.password && req.body.confirmpassword) && !validator.isStrongPassword(student.password)) {
-      // throw new Error("Password is not strong");
-      return res.status(400).json({
-        message:"Password is not strong"
-      })
-    }
+    // }
+    // if((req.body.password && req.body.confirmpassword) && !validator.isStrongPassword(student.password)) {
+    //   // throw new Error("Password is not strong");
+    //   return res.status(400).json({
+    //     message:"Password is not strong"
+    //   })
+    // }
 
 
     const updatedstudent = await student.save();
@@ -228,6 +234,8 @@ const update_student_data = async (req, res, next) => {
       roomNo: updatedstudent.roomNo,
       department: updatedstudent.department,
       floorNo: updatedstudent.floorNo,
+      gender:updatedstudent.gender,
+      dob:updatedstudent.dob,
       token: token,
     });
   } catch (error) {

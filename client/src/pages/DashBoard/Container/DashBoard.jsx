@@ -19,7 +19,7 @@ const DashBoard = ({ header, profile_pic }) => {
           <div>
             <ul className="flex gap-x-9 p-4">
               <li className="text-3xl text-slate-600 border-4 border-slate-900 p-2 rounded-full bg-sky-300">
-                <Link>Profile</Link>
+                <Link to="/profile">Profile</Link>
               </li>
               <li className="text-3xl text-slate-600 border-4 border-slate-900 p-2 rounded-full bg-sky-300">
                 <Link>Logout</Link>

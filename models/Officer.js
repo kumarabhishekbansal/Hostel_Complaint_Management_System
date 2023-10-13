@@ -40,6 +40,14 @@ const officerSchema = new mongoose.Schema({
     type: String,
     default: "Officer",
   },
+  gender:{
+    type:String,
+    default:""
+  },
+  dob:{
+    type:Date,
+    default:""
+  }
 },{
   timestamps:true
 });

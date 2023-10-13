@@ -20,11 +20,11 @@ officerrouter.put(
   officerGuard,
   update_officer_data
 );
-officerrouter.put(
-  "/updateprofilepic",
-  officerGuard,
-  update_officer_profile_pic
-);
+// officerrouter.put(
+//   "/updateprofilepic",
+//   officerGuard,
+//   update_officer_profile_pic
+// );
 
 officerrouter.get(
   "/getallcaretakers",

@@ -16,6 +16,8 @@ const uploadPicture=multer({
         fileSize:1*1000000,
     },
     fileFilter:function(req,file,cb){
+        console.log("fie :  ",req);
+        console.log("fie :  ",file);
         let extension=path.extname(file.originalname);
         if(extension!=='png' && extension!=='jpg' && extension!=='jpeg')
         {

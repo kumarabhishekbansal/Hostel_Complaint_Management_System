@@ -10,31 +10,14 @@ import {GiEyeTarget} from "react-icons/gi";
 import {FaReadme} from "react-icons/fa";
 import {BsBuildingAdd} from "react-icons/bs";
 import {PiStudentBold} from "react-icons/pi";
-const OfficerDashBoard = ({header,profile_pic}) => {
+const CareTakerDashBoard = ({header,profile_pic}) => {
   return (
     <section className=" mx-auto">
       <DashBoard header={header} profile_pic={profile_pic} />
       <div className="h-screen bg-slate-800">
         <BorderLine header={"Your Services"} />
         <div className="flex flex-col md:flex-row bg-slate-800 mt-10 gap-10 justify-center items-center flex-wrap mb-4">
-          <DashBoardCards
-            image={images.add_warden}
-            alt={"Add warden"}
-            content={"Add or Update Warden"}
-            link={"/"}
-            linkcontent={"Add"}
-            icon=<AiOutlineUsergroupAdd />
-          />
-
-          <DashBoardCards
-            image={images.add_care_taker}
-            alt={"Add caretaker"}
-            content={"Add or Update CareTaker"}
-            link={"/"}
-            linkcontent={"Add"}
-            icon=<GrAddCircle />
-          />
-
+        
           <DashBoardCards
             image={images.complaints}
             alt={"complaints"}
@@ -62,27 +45,10 @@ const OfficerDashBoard = ({header,profile_pic}) => {
             icon=<FaReadme />
           />
 
-          <DashBoardCards
-            image={images.add_hostels}
-            alt={"Add Hostels"}
-            content={"Add or update Hostels"}
-            link={"/"}
-            linkcontent={"Add"}
-            icon=<BsBuildingAdd />
-          />
-
-          <DashBoardCards
-            image={images.students}
-            alt={"Show all students"}
-            content={"Show all students"}
-            link={"/"}
-            linkcontent={"Add"}
-            icon=<PiStudentBold />
-          />
         </div>
       </div>
     </section>
   );
 };
 
-export default OfficerDashBoard;
+export default CareTakerDashBoard;

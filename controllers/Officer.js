@@ -1,5 +1,7 @@
 const Officer = require("../models/Officer");
 const validator = require("validator");
+const { fileRemover } = require("../utils/fileRemover");
+const { uploadPicture } = require("../middlewares/UploadPicturemiddleware");
 const {
   add_warden_by_officer,
   get_all_warden_for_officers,
@@ -36,18 +38,22 @@ const login = async (req, res, next) => {
   try {
     console.log("enter officer login");
     const { email, password } = req.body;
+    console.log(email, password);
     let officer = await Officer.findOne({ email });
     if (!officer) {
-      throw new Error("EMAIL NOT FOUND");
+      // throw new Error("EMAIL NOT FOUND");
+      return res.status(404).json({
+        message: "email not found",
+      });
     }
     if (await officer.comparePassword(password)) {
-      const token=await officer.generateJWT();
+      const token = await officer.generateJWT();
       if (req.cookies["Bearer_Officer"]) {
         req.cookies["Bearer_Officer"] = "";
       }
       res.cookie("Bearer_Officer", token, {
         path: "/",
-        expires: new Date(Date.now() + 1000 * 24*60*60), // 30 seconds
+        expires: new Date(Date.now() + 1000 * 24 * 60 * 60), // 30 seconds
         httpOnly: true,
         sameSite: "lax",
       });
@@ -59,12 +65,15 @@ const login = async (req, res, next) => {
         profilePic: officer.profilePic,
         address: officer.address,
         role: officer.role,
-        token:await officer.generateJWT(),
+        gender: officer.gender,
+        dob: officer.dob,
+        token: token,
       });
-    }else{
+    } else {
       return res.status(400).json({
-        message:"Password do not match"
-      })
+        message: "Password do not match",
+      });
+      // throw new Error("wrong credentials");
     }
   } catch (error) {
     console.log("error while login in officer");
@@ -80,12 +89,10 @@ const add_warden = async (req, res, next) => {
   try {
     const { name, phoneNo, email, password, hostelAssign, role } = req.body;
     const data = req.body;
-    if(add_warden_by_officer(data))
-    {
+    if (add_warden_by_officer(data)) {
       return res.send("warden has been added successfully");
     }
     return res.send("Something wrong happens");
-
   } catch (error) {
     console.log("error while add warden");
     console.log(error.message);
@@ -98,12 +105,10 @@ const add_care_taker = async (req, res, next) => {
   try {
     const { name, phoneNo, email, password, hostelAssign, role } = req.body;
     const data = req.body;
-    if(add_care_taker_by_officer(data)===true)
-    {
+    if (add_care_taker_by_officer(data) === true) {
       return res.send("care taker added successfully");
     }
     return res.send("something went wrong");
-    
   } catch (error) {
     console.log("error while add care taker");
   }
@@ -112,6 +117,7 @@ const add_care_taker = async (req, res, next) => {
 // get profile
 const getProfile = async (req, res, next) => {
   try {
+    console.log("enter getProfile officer");
     const data = await Officer.findById(req.officer._id);
     // if (data.length == 0) {
     //   throw new Error("Nothing to show");
@@ -123,6 +129,8 @@ const getProfile = async (req, res, next) => {
       profilePic: data.profilePic,
       address: data.address,
       role: data.role,
+      gender: data.gender,
+      dob: data.dob,
     });
   } catch (error) {
     console.log("error while getting officer profile");
@@ -133,62 +141,82 @@ const getProfile = async (req, res, next) => {
 
 const update_officer_data = async (req, res, next) => {
   try {
+    // console.log("--------------------------------------------------------");
+    // console.log("enter update_officer_data");
     let officer = await Officer.findById(req.officer._id);
+    req.body = req.body.officerdata;
+    console.log(req.body);
     if (!officer) {
-      throw new Error("No officer found for update");
+      //throw new Error("No officer found for update");
+      return res.status(400).json({
+        message: "No officer found for update",
+      });
     }
     officer.name = req.body.name || officer.name;
     officer.phoneNo = req.body.phoneNo || officer.phoneNo;
     officer.email = req.body.email || officer.email;
     officer.password = req.body.password || officer.password;
-    officer.confirmpassword =
-      req.body.confirmpassword || officer.confirmpassword;
-    // officer.profilePic = req.body.profilePic || officer.profilePic;
+    officer.confirmpassword =req.body.confirmpassword || officer.confirmpassword;
+    officer.profilePic = req.body.profilePic || officer.profilePic;
     officer.address = req.body.address || officer.address;
+    officer.gender = req.body.gender || officer.gender;
+    officer.dob = req.body.dob || officer.dob;
 
-    if(req.body.password && !req.body.confirmpassword)
-    {
-      return res.status(400).json({
-        message:"Enter confirm password also"
-      })
-    }
-    if(!req.body.password && req.body.confirmpassword)
-    {
-      return res.status(400).json({
-        message:"Enter  password also"
-      })
-    }
-    if ((req.body.password && req.body.confirmpassword) && officer.password !== officer.confirmpassword) {
-      // throw new Error("Password and confirm password do not match");
-      return res.status(400).json({
-        message:"Password and confirm password do not match"
-      })
-    }
-    if ((req.body.email) && !validator.isEmail(officer.email)) {
-      // throw new Error("Email not validate");
-      return res.status(400).json({
-        message:"Email not validate"
-      })
-      
-    }
-    if((req.body.password && req.body.confirmpassword) && !validator.isStrongPassword(officer.password)) {
-      // throw new Error("Password is not strong");
-      return res.status(400).json({
-        message:"Password is not strong"
-      })
-    }
+    // if (req.body.password && !req.body.confirmpassword) {
+    //   console.log("enter first if");
+    //   console.log(req.body.password,req.body.confirmpassword);
+    //   return res.status(400).json({
+    //     message: "Enter confirm password also",
+    //   });
+    // }
+    // if (!req.body.password && req.body.confirmpassword) {
+    //   console.log("enter second if");
+    //   return res.status(400).json({
+    //     message: "Enter  password also",
+    //   });
+    // }
+    // if (
+    //   req.body.password &&
+    //   req.body.confirmpassword &&
+    //   req.body.password !== req.body.confirmpassword
+    // ) {
+    //   // throw new Error("Password and confirm password do not match");
+    //   console.log("enter third if");
+    //   return res.status(400).json({
+    //     message: "Password and confirm password do not match",
+    //   });
+    // }
+    // if (req.body.email && !validator.isEmail(req.body.email)) {
+    //   // throw new Error("Email not validate");
+    //   console.log("enter fourth if");
+    //   return res.status(400).json({
+    //     message: "Email not validate",
+    //   });
+    // }
+    // if (
+    //   req.body.password &&
+    //   req.body.confirmpassword &&
+    //   !validator.isStrongPassword(req.body.password)
+    // ) {
+    //   // throw new Error("Password is not strong");
+    //   console.log("enter fifth if");
+    //   return res.status(400).json({
+    //     message: "Password is not strong",
+    //   });
+    // }
 
     const updatedofficer = await officer.save();
-    const token=await updatedofficer.generateJWT();
-      if (req.cookies["Bearer_Officer"]) {
-        req.cookies["Bearer_Officer"] = "";
-      }
-      res.cookie("Bearer_Officer", token, {
-        path: "/",
-        expires: new Date(Date.now() + 1000 * 24*60*60), // 30 seconds
-        httpOnly: true,
-        sameSite: "lax",
-      });
+    const token = await updatedofficer.generateJWT();
+    if (req.cookies["Bearer_Officer"]) {
+      req.cookies["Bearer_Officer"] = "";
+    }
+    res.cookie("Bearer_Officer", token, {
+      path: "/",
+      expires: new Date(Date.now() + 1000 * 24 * 60 * 60), // 30 seconds
+      httpOnly: true,
+      sameSite: "lax",
+    });
+    // console.log("updatedofficer : ", updatedofficer);
     return res.status(200).json({
       name: updatedofficer.name,
       phoneNo: updatedofficer.phoneNo,
@@ -196,7 +224,9 @@ const update_officer_data = async (req, res, next) => {
       profilePic: updatedofficer.profilePic,
       address: updatedofficer.address,
       role: updatedofficer.role,
-      token:token
+      gender: updatedofficer.gender,
+      dob: updatedofficer.dob,
+      token: token,
     });
   } catch (error) {
     console.log("error while update_officer_data");
@@ -204,38 +234,40 @@ const update_officer_data = async (req, res, next) => {
   }
 };
 
-
 // update officer profile photo
 
-const update_officer_profile_pic=async(req,res,next)=>{
+const update_officer_profile_pic = async (req, res, next) => {
   try {
+    console.log("enter update_officer_profile_pic");
     const upload = uploadPicture.single("profilePicture");
-
+    // console.log(req);
     upload(req, res, async function (err) {
       if (err) {
+        console.log("enter if-------------------");
         const error = new Error(
           "An unknown error occured when uploading " + err.message
         );
         next(error);
       } else {
         // every thing went well
+        console.log("enter else-------------------");
         if (req.file) {
           let filename;
-          let updatedofficer = await User.findById(req.officer._id);
-          filename = updatedofficer.avatar;
+          let updatedofficer = await Officer.findById(req.officer._id);
+          filename = updatedofficer.profilePic;
           // if we have already file exits then first we have to remove it then add new file
           if (filename) {
             fileRemover(filename);
           }
-          updatedofficer.avatar = req.file.filename;
+          updatedofficer.profilePic = req.file.filename;
           await updatedofficer.save();
-          const token=await updatedofficer.generateJWT();
+          const token = await updatedofficer.generateJWT();
           if (req.cookies["Bearer_Officer"]) {
             req.cookies["Bearer_Officer"] = "";
           }
           res.cookie("Bearer_Officer", token, {
             path: "/",
-            expires: new Date(Date.now() + 1000 * 24*60*60), // 30 seconds
+            expires: new Date(Date.now() + 1000 * 24 * 60 * 60), // 30 seconds
             httpOnly: true,
             sameSite: "lax",
           });
@@ -247,23 +279,24 @@ const update_officer_profile_pic=async(req,res,next)=>{
             profilePic: updatedofficer.profilePic,
             address: updatedofficer.address,
             role: updatedofficer.role,
-            token:token,
+            token: token,
           });
         } else {
           // we have to delete image when nothing upload
           let filename;
-          let updatedofficer = await User.findById(req.officer._id);
-          filename = updatedofficer.avatar;
-          updatedofficer.avatar = "";
+          let updatedofficer = await Officer.findById(req.officer._id);
+          filename = updatedofficer.profilePic;
+          console.log("filename : ", filename);
+          updatedofficer.profilePic = "";
           await updatedofficer.save();
           fileRemover(filename);
-          const token=await updatedofficer.generateJWT();
+          const token = await updatedofficer.generateJWT();
           if (req.cookies["Bearer_Officer"]) {
             req.cookies["Bearer_Officer"] = "";
           }
           res.cookie("Bearer_Officer", token, {
             path: "/",
-            expires: new Date(Date.now() + 1000 * 24*60*60), // 30 seconds
+            expires: new Date(Date.now() + 1000 * 24 * 60 * 60), // 30 seconds
             httpOnly: true,
             sameSite: "lax",
           });
@@ -275,17 +308,17 @@ const update_officer_profile_pic=async(req,res,next)=>{
             profilePic: updatedofficer.profilePic,
             address: updatedofficer.address,
             role: updatedofficer.role,
-            token:token,
+            token: token,
           });
         }
       }
     });
   } catch (error) {
     console.log("error while update_officer_profile_pic");
-    next(error);
+    console.log(error.message);
+    // next(error);
   }
-}
-
+};
 
 // get all wardens to assign hostels
 
@@ -321,5 +354,5 @@ module.exports = {
   update_officer_data,
   update_officer_profile_pic,
   get_all_wardens,
-  get_all_caretakers
+  get_all_caretakers,
 };

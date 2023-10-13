@@ -46,6 +46,14 @@ const caretakerSchema = new mongoose.Schema({
   role:{
     type:String,
     default:"caretaker"
+  },
+  gender:{
+    type:String,
+    default:""
+  },
+  dob:{
+    type:Date,
+    default:""
   }
 },{
   timestamps:true
