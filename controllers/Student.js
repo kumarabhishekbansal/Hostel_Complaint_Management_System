@@ -1,5 +1,5 @@
 const Student = require("../models/Student");
-const validator = require("validator");
+const Complaint=require("../models/Complaint");
 const { update_room_by_hostel_roomno } = require("./rooms");
 const {
   create_issue_by_student,
@@ -365,8 +365,19 @@ const create_issue = async (req, res, next) => {
     const { issue, tags } = req.body;
     const student_id = req.student._id;
     const data = { student_id: student_id, issue: issue, tags: tags };
-    if ((await create_issue_by_student(data)) === true) {
-      return res.send("Issue created");
+    if ((await create_issue_by_student(data))) {
+      const getdata=await Complaint.find({student:student_id}).populate([
+        {
+          path:"student",
+          select:["name","roomNo"]
+        },{
+          path:"assignedTo",
+          select:["name","phoneNo"]
+        }
+      ]);
+      return res.status(200).json({
+        data:getdata
+      })
     }
     return res.send("something went wrong");
   } catch (error) {
@@ -380,9 +391,13 @@ const get_complaints = async (req, res, next) => {
   try {
     const data = { student: req.student._id };
     const getdata = await get_all_complaints_with_student(data);
-    return res.status(200).json({
-      data: getdata,
-    });
+    if(res)
+    {
+      return res.status(200).json({
+        data: getdata,
+      });
+    }
+    return getdata;
   } catch (error) {
     console.log("error while get_complaints");
   }

@@ -93,4 +93,29 @@ export const WardenGaurd = (props) => {
   );
 };
 
+export const StudentGaurd = (props) => {
+  const { Component } = props;
+  const navigate = useNavigate();
+  const userstate = useSelector((state) => state.user);
+
+  useEffect(() => {
+    if (!userstate || !userstate?.userInfo || !userstate?.userInfo?.role) {
+      // console.log(userstate?.userInfo?.role);
+      navigate("/dash");
+    }else if(userstate?.userInfo?.role!=="student")
+    {
+        navigate("/notfound")
+    }
+    // console.log(userstate?.userInfo?.role);
+  }, [userstate, navigate]);
+
+  return (
+    <>
+      <div>
+        <Component />
+      </div>
+    </>
+  );
+};
+
 export default Auth;

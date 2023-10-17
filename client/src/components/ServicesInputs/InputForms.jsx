@@ -57,7 +57,7 @@ const InputForms = ({
           {children}
         </div>
         {errors && errors[name] && errors[name]?.message && (
-          <p className="text-red-400 text-xl bg-red-700 mt-2">
+          <p className="text-red-200 text-xl bg-red-700 mt-2 p-3 text-center font-bold uppercase">
             {errors[name]?.message}
           </p>
         )}

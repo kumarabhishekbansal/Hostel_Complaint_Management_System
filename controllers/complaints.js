@@ -202,7 +202,15 @@ const get_all_complaints_with_student = async (data) => {
     // console.log("student",student);
     const getdata = await Complaint.find({ student: student }).sort({
       createdDate: 1,
-    });
+    }).populate([
+      {
+        path:"student",
+        select:["name","roomNo"]
+      },{
+        path:"assignedTo",
+        select:["name","phoneNo"]
+      }
+    ])
     return getdata;
   } catch (error) {
     console.log("error while get_all_complaints_with_student");

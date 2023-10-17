@@ -7,7 +7,7 @@ import ContactUs from './pages/Contact/ContactUsPage';
 import Dash from './pages/NotAuthorized/Dash';
 import DashBoardPage from './pages/DashBoard/DashBoardPage';
 import ProfilePage from './pages/Profile/ProfilePage';
-import {Auth,Authorized,OfficeGaurd,WardenGaurd} from './middlewares/Auth';
+import {Auth,Authorized,OfficeGaurd,WardenGaurd,StudentGaurd} from './middlewares/Auth';
 import AddWarden from './pages/officer/AddWarden';
 import NotFound from './pages/NotAuthorized/NotFound';
 import AddHostels from './pages/officer/AddHostels';
@@ -15,6 +15,8 @@ import AddCareTakers from './pages/officer/AddCareTakers';
 import ShowAllStudents from './pages/officer/ShowAllStudents';
 import AddStudents from './pages/warden/AddStudents';
 import ShowStudents from './pages/warden/ShowStudents';
+import CreateIssue from './pages/student/CreateIssue';
+import GetComplaints from './pages/student/GetComplaints';
 const App = () => {
   return (
    <>
@@ -32,6 +34,8 @@ const App = () => {
       <Route exact path="/show-students" element={<OfficeGaurd Component={ShowAllStudents} />} />
       <Route exact path="/add-students" element={<WardenGaurd Component={AddStudents} />} />
       <Route exact path="/show-students-warden" element={<WardenGaurd Component={ShowStudents} />} />
+      <Route exact path="/create-issue" element={<StudentGaurd Component={CreateIssue} />} />
+      <Route exact path="/get-complaint-student" element={<StudentGaurd Component={GetComplaints} />} />
     </Routes>
     <Toaster />
    </>

@@ -21,7 +21,7 @@ const StudentDashBoard = ({ header, profile_pic }) => {
             image={images.complaints}
             alt={"complaints"}
             content={"Get All Complaints"}
-            link={"/"}
+            link={"/get-complaint-student"}
             linkcontent={"show"}
             icon=<BiSolidShow />
           />
@@ -48,7 +48,7 @@ const StudentDashBoard = ({ header, profile_pic }) => {
             image={images.complaints}
             alt={"Create an issue"}
             content={"Create an issue"}
-            link={"/"}
+            link={"/create-issue"}
             linkcontent={"Create"}
             icon=<BsPenFill />
           />
@@ -66,7 +66,7 @@ const StudentDashBoard = ({ header, profile_pic }) => {
             image={images.bgcontact_2}
             alt={"contact us"}
             content={"Contact Us"}
-            link={"/"}
+            link={"/contact"}
             linkcontent={"contact"}
             icon=<GrContact />
           />

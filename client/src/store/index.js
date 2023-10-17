@@ -5,6 +5,7 @@ import { WardenReducer } from "./reducers/WardenSlice";
 import { CareTakerReducer } from "./reducers/CareTakerSlice";
 import { StudentReducer } from "./reducers/StudentsSlice";
 import { RoomReducer } from "./reducers/RoomSlice";
+import { ComplaintReducer } from "./reducers/Complaints";
 const store=configureStore({
     reducer:{
         user:userReducer,
@@ -13,6 +14,7 @@ const store=configureStore({
         caretakers:CareTakerReducer,
         allstudents:StudentReducer,
         rooms:RoomReducer,
+        complaints:ComplaintReducer
     }
 })
 
