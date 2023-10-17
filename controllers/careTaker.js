@@ -85,7 +85,12 @@ const login = async (req, res, next) => {
 const get_all_caretakers_for_warden = async (data) => {
   try {
     const { hostel_id } = data;
-    const getdata = await careTaker.find({ hostelAssign: hostel_id });
+    const getdata = await careTaker.find({ hostelAssign: hostel_id }).populate([
+      {
+        path:"hostelAssign",
+        select:["hostel_name"]
+      }
+    ]);
     return getdata;
   } catch (error) {
     console.log("error while get_all_caretakers_for_warden");
@@ -97,7 +102,12 @@ const get_all_caretakers_for_warden = async (data) => {
 
 const get_all_care_taker_for_officers = async () => {
   try {
-    const getdata = await careTaker.find({});
+    const getdata = await careTaker.find({}).populate([
+      {
+        path:"hostelAssign",
+        select:["hostel_name"]
+      }
+    ]);;
     return getdata;
   } catch (error) {
     console.log("error while get_all_care_taker_for_officers");

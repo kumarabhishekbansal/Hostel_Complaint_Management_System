@@ -21,7 +21,7 @@ const WardenDashBoard = ({header,profile_pic}) => {
             image={images.students}
             alt={"Add Students"}
             content={"Add or Update students"}
-            link={"/"}
+            link={"/add-students"}
             linkcontent={"Add"}
             icon=<AiOutlineUsergroupAdd />
           />

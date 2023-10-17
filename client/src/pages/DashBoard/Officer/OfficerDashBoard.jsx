@@ -21,7 +21,7 @@ const OfficerDashBoard = ({header,profile_pic}) => {
             image={images.add_warden}
             alt={"Add warden"}
             content={"Add or Update Warden"}
-            link={"/"}
+            link={"/add-warden"}
             linkcontent={"Add"}
             icon=<AiOutlineUsergroupAdd />
           />
@@ -30,7 +30,7 @@ const OfficerDashBoard = ({header,profile_pic}) => {
             image={images.add_care_taker}
             alt={"Add caretaker"}
             content={"Add or Update CareTaker"}
-            link={"/"}
+            link={"/add-caretaker"}
             linkcontent={"Add"}
             icon=<GrAddCircle />
           />
@@ -66,7 +66,7 @@ const OfficerDashBoard = ({header,profile_pic}) => {
             image={images.add_hostels}
             alt={"Add Hostels"}
             content={"Add or update Hostels"}
-            link={"/"}
+            link={"/add-hostels"}
             linkcontent={"Add"}
             icon=<BsBuildingAdd />
           />
@@ -75,7 +75,7 @@ const OfficerDashBoard = ({header,profile_pic}) => {
             image={images.students}
             alt={"Show all students"}
             content={"Show all students"}
-            link={"/"}
+            link={"/show-students"}
             linkcontent={"Add"}
             icon=<PiStudentBold />
           />

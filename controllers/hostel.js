@@ -43,8 +43,9 @@ const addHostels = async (req, res, next) => {
     };
     // console.log(data);
     await add_rooms(data);
+    const getResults=await Hostel.find({});
     return res.status(200).json({
-      message:"Hostels and empty rooms are added "
+      data:getResults
     })
   } catch (error) {
     console.log("error while adding hostel");
@@ -52,4 +53,15 @@ const addHostels = async (req, res, next) => {
   }
 };
 
-module.exports = { addHostels };
+const getHostels=async(req,res,next)=>{
+  try {
+    const data=await Hostel.find({});
+    return res.status(200).json({
+      data:data
+    })
+  } catch (error) {
+    console.log("error while getting all hostels");
+  }
+}
+
+module.exports = { addHostels,getHostels };

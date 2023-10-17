@@ -1,11 +1,18 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { userReducer } from "./reducers/UserSlice";
-const userInfoFromStorage = localStorage.getItem("hcmccount")
-  ? JSON.parse(localStorage.getItem("hcmaccount"))
-  : null;
+import {HostelReducer} from "./reducers/HostelSlice"
+import { WardenReducer } from "./reducers/WardenSlice";
+import { CareTakerReducer } from "./reducers/CareTakerSlice";
+import { StudentReducer } from "./reducers/StudentsSlice";
+import { RoomReducer } from "./reducers/RoomSlice";
 const store=configureStore({
     reducer:{
-        user:userReducer
+        user:userReducer,
+        hostels:HostelReducer,
+        wardens:WardenReducer,
+        caretakers:CareTakerReducer,
+        allstudents:StudentReducer,
+        rooms:RoomReducer,
     }
 })
 

@@ -1,4 +1,5 @@
 const Warden = require("../models/Warden");
+const Student=require("../models/Student");
 const { update_assign_task_care_taker } = require("./complaints");
 const {
   register_Student_From_Warden,
@@ -93,7 +94,12 @@ const login = async (req, res, next) => {
 
 const get_all_warden_for_officers = async () => {
   try {
-    const getdata = await Warden.find({});
+    const getdata = await Warden.find({}).populate([
+      {
+        path: "hostelAssign",
+        select: ["hostel_name"],
+      },
+    ]);
     return getdata;
   } catch (error) {
     console.log("error while get_all_warden_for_officers");
@@ -108,27 +114,24 @@ const add_students_by_warden = async (req, res, next) => {
       name,
       phoneNo,
       email,
-      password,
       roomNo,
       department,
       floorNo,
-      role,
     } = req.body;
-    const hostelAssign=req.warden.hostelAssign;
-    const data = {
-      name,
-      phoneNo,
-      email,
-      password,
-      hostelAssign,
-      roomNo,
-      department,
-      floorNo,
-      role,
-    }
-    if(await register_Student_From_Warden(data)===true)
+    const data = {...req.body,password:"Student@"+name+"123",hostelAssign:req.warden.hostelAssign,role:"student"};
+    // console.log(data);
+    if(await register_Student_From_Warden(data))
     {
-      return res.send("student added");
+      const result=await Student.find({hostelAssign:data.hostelAssign}).populate([
+        {
+          path: "hostelAssign",
+          select: ["hostel_name"],
+        },
+      ]);;
+      console.log("result is : ",result);
+      return res.status(200).json({
+        data:result
+      })
     }
     return res.send("something wrong");
   } catch (error) {
@@ -367,12 +370,16 @@ const get_care_takers = async (req, res, next) => {
 
 const get_students = async (req, res, next) => {
   try {
-    const hostel_id = req.warden.hostelAssign;
+    const hostel_id = req.warden?.hostelAssign;
     const data = { hostel_id: hostel_id };
     const getdata = await get_all_students_for_wardens(data);
-    return res.status(200).json({
-      data: getdata,
-    });
+    if(res)
+    {
+      return res.status(200).json({
+        data: getdata,
+      });
+    }
+    return getdata;
   } catch (error) {
     console.log("error while get_students ");
   }

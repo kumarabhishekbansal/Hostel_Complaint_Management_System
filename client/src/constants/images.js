@@ -18,6 +18,7 @@ import students from "../Images/officer/students.jpg";
 import add_hostels from "../Images/officer/Add_Hostels.jpg";
 import latest_news from "../Images/officer/latest_announcements.jpg";
 import mess_menu from "../Images/officer/mess_menu.jpg";
+import pagenotfound from "../Images/PageNotFound/1.jpg"
 const images={
     Logo,
     HeroImage,
@@ -38,7 +39,8 @@ const images={
     add_hostels,
     students,
     mess_menu,
-    latest_news
+    latest_news,
+    pagenotfound
 }
 
 export default images;

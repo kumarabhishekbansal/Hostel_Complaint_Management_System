@@ -7,17 +7,31 @@ import ContactUs from './pages/Contact/ContactUsPage';
 import Dash from './pages/NotAuthorized/Dash';
 import DashBoardPage from './pages/DashBoard/DashBoardPage';
 import ProfilePage from './pages/Profile/ProfilePage';
-import {Auth,Authorized} from './middlewares/Auth';
+import {Auth,Authorized,OfficeGaurd,WardenGaurd} from './middlewares/Auth';
+import AddWarden from './pages/officer/AddWarden';
+import NotFound from './pages/NotAuthorized/NotFound';
+import AddHostels from './pages/officer/AddHostels';
+import AddCareTakers from './pages/officer/AddCareTakers';
+import ShowAllStudents from './pages/officer/ShowAllStudents';
+import AddStudents from './pages/warden/AddStudents';
+import ShowStudents from './pages/warden/ShowStudents';
 const App = () => {
   return (
    <>
     <Routes>
       <Route index path="/" element={<HomePage />} />
+      <Route index path="/notfound" element={<NotFound />} />
       <Route exact path="/about" element={<About />} />
       <Route exact path="/contact" element={<ContactUs />} />
       <Route exact path="/dash" element={<Authorized Component={Dash}/>} />
       <Route exact path="/dashboard" element={<Auth Component={DashBoardPage} />} />
       <Route exact path="/profile" element={<Auth Component={ProfilePage} />} />
+      <Route exact path="/add-warden" element={<OfficeGaurd Component={AddWarden} />} />
+      <Route exact path="/add-hostels" element={<OfficeGaurd Component={AddHostels} />} />
+      <Route exact path="/add-caretaker" element={<OfficeGaurd Component={AddCareTakers} />} />
+      <Route exact path="/show-students" element={<OfficeGaurd Component={ShowAllStudents} />} />
+      <Route exact path="/add-students" element={<WardenGaurd Component={AddStudents} />} />
+      <Route exact path="/show-students-warden" element={<WardenGaurd Component={ShowStudents} />} />
     </Routes>
     <Toaster />
    </>

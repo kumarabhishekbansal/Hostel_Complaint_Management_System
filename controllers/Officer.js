@@ -1,5 +1,7 @@
 const Officer = require("../models/Officer");
-const validator = require("validator");
+const Warden=require("../models/Warden");
+const CareTaker=require("../models/careTaker");
+const Student=require("../models/Student");
 const { fileRemover } = require("../utils/fileRemover");
 const { uploadPicture } = require("../middlewares/UploadPicturemiddleware");
 const {
@@ -87,10 +89,20 @@ const login = async (req, res, next) => {
 
 const add_warden = async (req, res, next) => {
   try {
-    const { name, phoneNo, email, password, hostelAssign, role } = req.body;
-    const data = req.body;
-    if (add_warden_by_officer(data)) {
-      return res.send("warden has been added successfully");
+    const { name, phoneNo, email,hostelAssign} = req.body;
+    // console.log("Password : ","Warden@"+name+"123");
+    const data = {...req.body,password:"Warden@"+name+"123",role:"warden"};
+    if (await add_warden_by_officer(data)) {
+      const result=await Warden.find({}).populate([
+        {
+          path: "hostelAssign",
+          select: ["hostel_name"],
+        },
+      ]);;
+      console.log("result is : ",result);
+      return res.status(200).json({
+        data:result
+      })
     }
     return res.send("Something wrong happens");
   } catch (error) {
@@ -103,10 +115,18 @@ const add_warden = async (req, res, next) => {
 
 const add_care_taker = async (req, res, next) => {
   try {
-    const { name, phoneNo, email, password, hostelAssign, role } = req.body;
-    const data = req.body;
-    if (add_care_taker_by_officer(data) === true) {
-      return res.send("care taker added successfully");
+    const { name, phoneNo, email, hostelAssign } = req.body;
+    const data = {...req.body,password:"CareTaker@"+name+"123",role:"caretaker"};
+    if (await add_care_taker_by_officer(data)) {
+      const getResults=await CareTaker.find({}).populate([
+        {
+          path:"hostelAssign",
+          select:["hostel_name"]
+        }
+      ]);
+      return res.status(200).json({
+        data:getResults
+      })
     }
     return res.send("something went wrong");
   } catch (error) {
@@ -325,11 +345,20 @@ const update_officer_profile_pic = async (req, res, next) => {
 const get_all_wardens = async (req, res, next) => {
   try {
     const data = await get_all_warden_for_officers();
-    return res.status(200).json({
-      data: data,
-    });
+    // console.log("data : ",data);
+    // console.log("res : ",res);
+    if(res)
+    {
+      return res.status(200).json({
+        data: data,
+      });
+    }
+    return data;
+
+    // return data;
   } catch (error) {
     console.log("error while get_all_wardens");
+    console.log(error.message);
   }
 };
 
@@ -338,13 +367,33 @@ const get_all_wardens = async (req, res, next) => {
 const get_all_caretakers = async (req, res, next) => {
   try {
     const data = await get_all_care_taker_for_officers();
-    return res.status(200).json({
-      data: data,
-    });
+    if(res)
+    {
+      return res.status(200).json({
+        data: data,
+      });
+    }
+    return data;
   } catch (error) {
     console.log("error while get_all_caretakers");
   }
 };
+
+const getAllStudents=async(req,res,next)=>{
+  try {
+    const data=await Student.find({}).populate([
+      {
+        path:"hostelAssign",
+        select:["hostel_name"]
+      }
+    ]);
+    return res.status(200).json({
+      data:data
+    })
+  } catch (error) {
+    console.log("error whilee getting all students");
+  }
+}
 
 module.exports = {
   login,
@@ -355,4 +404,5 @@ module.exports = {
   update_officer_profile_pic,
   get_all_wardens,
   get_all_caretakers,
+  getAllStudents
 };

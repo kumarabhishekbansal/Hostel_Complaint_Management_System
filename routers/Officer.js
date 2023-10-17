@@ -8,6 +8,7 @@ const {
   update_officer_profile_pic,
   get_all_wardens,
   get_all_caretakers,
+  getAllStudents
 } = require("../controllers/Officer");
 const {  officerGuard } = require("../middlewares/authmiddleware");
 officerrouter.post("/login", login);
@@ -15,6 +16,7 @@ officerrouter.post("/add-warden",  officerGuard, add_warden);
 officerrouter.post("/add-careTaker",  officerGuard, add_care_taker);
 officerrouter.get("/getprofile", officerGuard, getProfile);
 officerrouter.get("/getallwardens",  officerGuard, get_all_wardens);
+officerrouter.get("/getallstudents",  officerGuard, getAllStudents);
 officerrouter.put(
   "/updateprofile",
   officerGuard,

@@ -1,5 +1,5 @@
 const Student = require("../models/Student");
-const validator=require("validator");
+const validator = require("validator");
 const { update_room_by_hostel_roomno } = require("./rooms");
 const {
   create_issue_by_student,
@@ -14,12 +14,12 @@ const register_Student_From_Warden = async (data) => {
       name,
       phoneNo,
       email,
-      password,
-      hostelAssign,
       roomNo,
       department,
       floorNo,
-      role,
+      password,
+      hostelAssign,
+      role
     } = data;
     if (
       !name ||
@@ -32,6 +32,17 @@ const register_Student_From_Warden = async (data) => {
       !floorNo ||
       !role
     ) {
+      // console.log(
+      //   name,
+      //   phoneNo,
+      //   email,
+      //   roomNo,
+      //   department,
+      //   floorNo,
+      //   password,
+      //   hostelAssign,
+      //   role
+      // );
       throw new Error("Add all fields to adding student");
     }
     const registerStudent = await Student.create({
@@ -107,8 +118,8 @@ const login = async (req, res, next) => {
         roomNo: data.roomNo,
         department: data.department,
         floorNo: data.floorNo,
-        gender:data.gender,
-        dob:data.dob,
+        gender: data.gender,
+        dob: data.dob,
         token: token,
       });
     }
@@ -146,8 +157,8 @@ const getProfile = async (req, res, next) => {
       roomNo: data.roomNo,
       department: data.department,
       floorNo: data.floorNo,
-      gender:data.gender,
-      dob:data.dob,
+      gender: data.gender,
+      dob: data.dob,
     });
   } catch (error) {
     console.log("error while getting student profile");
@@ -158,7 +169,7 @@ const getProfile = async (req, res, next) => {
 
 const update_student_data = async (req, res, next) => {
   try {
-    req.body=req.body?.studentdata
+    req.body = req.body?.studentdata;
     let student = await Student.findById(req.student._id).populate([
       {
         path: "hostelAssign",
@@ -202,7 +213,7 @@ const update_student_data = async (req, res, next) => {
     //   return res.status(400).json({
     //     message:"Email not validate"
     //   })
-      
+
     // }
     // if((req.body.password && req.body.confirmpassword) && !validator.isStrongPassword(student.password)) {
     //   // throw new Error("Password is not strong");
@@ -210,7 +221,6 @@ const update_student_data = async (req, res, next) => {
     //     message:"Password is not strong"
     //   })
     // }
-
 
     const updatedstudent = await student.save();
     const token = await updatedstudent.generateJWT();
@@ -234,8 +244,8 @@ const update_student_data = async (req, res, next) => {
       roomNo: updatedstudent.roomNo,
       department: updatedstudent.department,
       floorNo: updatedstudent.floorNo,
-      gender:updatedstudent.gender,
-      dob:updatedstudent.dob,
+      gender: updatedstudent.gender,
+      dob: updatedstudent.dob,
       token: token,
     });
   } catch (error) {
@@ -337,10 +347,10 @@ const get_all_students_for_wardens = async (data) => {
     const { hostel_id } = data;
     const getdata = await Student.find({ hostelAssign: hostel_id }).populate([
       {
-        path:"hostelAssign",
-        select:["hostel_name"]
-      }
-    ])
+        path: "hostelAssign",
+        select: ["hostel_name"],
+      },
+    ]);
     return getdata;
   } catch (error) {
     console.log("error while get_all_students_for_wardens");
