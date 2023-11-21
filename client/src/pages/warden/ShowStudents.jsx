@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import TagLine from "../../components/TagLines/TagLine";
+import { useSelector } from "react-redux";
 
 const ShowStudents = ({studentsdata,studentdataloading}) => {
+  const getstudentdata=useSelector((state)=>state.allstudents);
+  
   return (
     <div className="mt-5">
       <TagLine heading={"Show All Students"} />
@@ -40,7 +43,25 @@ const ShowStudents = ({studentsdata,studentdataloading}) => {
           </>
         ) : (
           <>
-          {studentdataloading && <h2 className="text-4xl text-center font-bold">Loading.....</h2>}
+
+          {getstudentdata && getstudentdata?.studentsInfo && getstudentdata?.studentsInfo?.data ?(<>
+            {getstudentdata?.studentsInfo?.data.map((val)=>{
+              return (
+                    <tr>
+                      <td className="overflow-auto hidden md:block border-4 border-slate-600">{val._id}</td>
+                      <td className="overflow-auto border-4 border-slate-600">{val.name}</td>
+                      <td className="hidden lg:block border-4 border-slate-600">{val.address}</td>
+                      <td className="overflow-auto border-4 border-slate-600">{val.phoneNo}</td>
+                      <td className="overflow-auto border-4 border-slate-600">{val.email}</td>
+                      <td className="overflow-auto hidden md:block border-4 border-slate-600">{val.gender}</td>
+                      <td className="overflow-auto border-4 border-slate-600">{val.roomNo}</td>
+                    </tr>
+                  );
+            })}
+          </>):(<>
+            {studentdataloading && <h2 className="text-4xl text-center font-bold">Loading.....</h2>}
+          </>)}
+          
             
           </>
         )}

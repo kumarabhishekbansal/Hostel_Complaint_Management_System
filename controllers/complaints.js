@@ -30,6 +30,12 @@ const update_assign_task_care_taker = async (data) => {
 const update_status_by_care_taker = async (data) => {
   try {
     const { complaint_id, status } = data;
+    if (!complaint_id || !status) {
+      // throw new Error("can not assign care taker to this task");
+      return res.status(400).josn({
+        message:"can not updated task"
+      })
+    }
     const update_status = await Complaint.findByIdAndUpdate(complaint_id, {
       status: status,
     });
@@ -238,18 +244,18 @@ const get_all_complaints_for_warden = async (req, res, next) => {
       .populate([
         {
           path: "student",
-          select: ["hostelAssign"],
+          select: ["hostelAssign","name","roomNo"],
         },
       ]);
       // console.log(data);
-    // var getdata = [];
+    var getdata = [];
     if (data.length > 0) {
       getdata = data.filter((val) => {
         // console.log("val ",val.student.hostelAssign.toString()===hostel_id.toString());
         return val.student.hostelAssign.toString() === hostel_id.toString();
       });
     }
-    console.log(getdata);
+    // console.log(getdata);
     return res.status(200).json({
       data: getdata,
     });
@@ -262,6 +268,7 @@ const get_all_complaints_for_warden = async (req, res, next) => {
 
 const get_all_complaints_for_caretaker = async (req, res, next) => {
   try {
+    console.log("enter get_all_complaints_for_caretaker");
     const hostel_id = req.caretaker.hostelAssign;
     // now we have hostel id through
     // nnow get all students complaints which are belongs to same hostel
@@ -273,7 +280,7 @@ const get_all_complaints_for_caretaker = async (req, res, next) => {
       .populate([
         {
           path: "student",
-          select: ["hostelAssign"],
+          select: ["hostelAssign","name","roomNo"],
         },
       ]);
     // var getdata = [];

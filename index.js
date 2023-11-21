@@ -15,6 +15,7 @@ const {studentrouter}=require("./routers/Students");
 const {complaintrouter}=require("./routers/Complaint");
 const {roomrouter}=require("./routers/Rooms");
 const {hostelrouter}=require("./routers/Hostel");
+const {MessageRouter}=require("./routers/LatestMessage");
 dotenv.config();
 // establish connections
 
@@ -33,9 +34,10 @@ app.use("/api/student",studentrouter);
 app.use("/api/complaint",complaintrouter);
 app.use("/api/room",roomrouter);
 app.use("/api/hostel",hostelrouter);
+app.use("/api/message",MessageRouter);
 
 app.use(errorResponseHandling);
-app.use(invalidPathHandler);
+// app.use(invalidPathHandler);
 
 
 const PORT = process.env.PORT || 5000;
@@ -43,7 +45,26 @@ const PORT = process.env.PORT || 5000;
 app.get("/",(req,res)=>{
     console.log("server is listening at home page");
 })
+app.get('/delete-cookie', async(req, res) => {
+  try {
+    console.log("enter logout");
+    if (
+        // req.headers.authorization &&
+        // req.headers.authorization.startsWith("Bearer_Officer")
+        req.headers.cookie
+      )
+      {
+        const cookie_name=req.headers.cookie.split("=")[0];
+        console.log(cookie_name,req.headers.cookie);
+      res.cookie(cookie_name, '', { expires: new Date(0) });
+      res.send('Cookie deleted');
+      }
+  } catch (error) {
+   console.log("Unable to logout"); 
+  }
+  });
 
+app.use(invalidPathHandler);
 app.listen(PORT,()=>{
     console.log(`Server is listening at port no. ${PORT}`);
 })

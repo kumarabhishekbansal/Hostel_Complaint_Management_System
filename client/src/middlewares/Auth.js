@@ -118,4 +118,29 @@ export const StudentGaurd = (props) => {
   );
 };
 
+export const CareTakerGaurd = (props) => {
+  const { Component } = props;
+  const navigate = useNavigate();
+  const userstate = useSelector((state) => state.user);
+
+  useEffect(() => {
+    if (!userstate || !userstate?.userInfo || !userstate?.userInfo?.role) {
+      // console.log(userstate?.userInfo?.role);
+      navigate("/dash");
+    }else if(userstate?.userInfo?.role!=="caretaker")
+    {
+        navigate("/notfound")
+    }
+    // console.log(userstate?.userInfo?.role);
+  }, [userstate, navigate]);
+
+  return (
+    <>
+      <div>
+        <Component />
+      </div>
+    </>
+  );
+};
+
 export default Auth;

@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import {Routes,Route} from "react-router-dom";
 import HomePage from './pages/Home/HomePage';
 import About from './pages/About/AboutPage';
@@ -7,7 +7,7 @@ import ContactUs from './pages/Contact/ContactUsPage';
 import Dash from './pages/NotAuthorized/Dash';
 import DashBoardPage from './pages/DashBoard/DashBoardPage';
 import ProfilePage from './pages/Profile/ProfilePage';
-import {Auth,Authorized,OfficeGaurd,WardenGaurd,StudentGaurd} from './middlewares/Auth';
+import {Auth,Authorized,OfficeGaurd,WardenGaurd,StudentGaurd,CareTakerGaurd} from './middlewares/Auth';
 import AddWarden from './pages/officer/AddWarden';
 import NotFound from './pages/NotAuthorized/NotFound';
 import AddHostels from './pages/officer/AddHostels';
@@ -17,6 +17,10 @@ import AddStudents from './pages/warden/AddStudents';
 import ShowStudents from './pages/warden/ShowStudents';
 import CreateIssue from './pages/student/CreateIssue';
 import GetComplaints from './pages/student/GetComplaints';
+import GetComplaintsWarden from './pages/warden/GetComplaintsWarden';
+import GetComplaintsCareTaker from './pages/caretaker/GetComplaintCareTaker';
+import LatestAnnouncement from './pages/common/LatestAnnouncement';
+import ShowCareTakers from './pages/warden/ShowCareTakers';
 const App = () => {
   return (
    <>
@@ -36,6 +40,10 @@ const App = () => {
       <Route exact path="/show-students-warden" element={<WardenGaurd Component={ShowStudents} />} />
       <Route exact path="/create-issue" element={<StudentGaurd Component={CreateIssue} />} />
       <Route exact path="/get-complaint-student" element={<StudentGaurd Component={GetComplaints} />} />
+      <Route exact path="/get-complaint-warden" element={<WardenGaurd Component={GetComplaintsWarden} />} />
+      <Route exact path="/show-caretaker-warden" element={<WardenGaurd Component={ShowCareTakers} />} />
+      <Route exact path="/get-complaint-caretaker" element={<CareTakerGaurd Component={GetComplaintsCareTaker} />} />
+      <Route exact path="/GetLatestAnnouncements" element={<LatestAnnouncement/>} />
     </Routes>
     <Toaster />
    </>

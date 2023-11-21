@@ -39,7 +39,7 @@ const StudentDashBoard = ({ header, profile_pic }) => {
             image={images.latest_news}
             alt={"latest announcements"}
             content={"Latest Announcements"}
-            link={"/"}
+            link={"/GetLatestAnnouncements"}
             linkcontent={"Read"}
             icon=<FaReadme />
           />

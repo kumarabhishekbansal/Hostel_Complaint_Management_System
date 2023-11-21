@@ -315,9 +315,11 @@ const update_caretaker_profile_pic=async(req,res,next)=>{
 const update_status_complaint = async (req, res, next) => {
   try {
     const data = req.body;
-    if(await update_status_by_care_taker(data)===true)
+    if(await update_status_by_care_taker(data))
     {
-      return res.send("status updated");
+      return res.status(200).json({
+        message:"Status Updated"
+      })
     }
     return res.send("spmething went wrong");
   } catch (error) {

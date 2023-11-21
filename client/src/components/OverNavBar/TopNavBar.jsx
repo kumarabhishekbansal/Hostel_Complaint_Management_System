@@ -1,7 +1,16 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { images } from "../../constants";
+import { logout } from "../../services/user";
+
 const TopNavBar = () => {
+
+  const handleLogout=()=>{
+    logout();
+    localStorage.clear();
+    window.location.reload(false);
+  }
+
   return (
     <>
       <div className="bg-dark-hard flex flex-col w-full">
@@ -22,7 +31,7 @@ const TopNavBar = () => {
                 <Link to="/profile">Profile</Link>
               </li>
               <li className="text-xl md:text-2xl lg:text-3xl text-slate-600 border-4 border-slate-900 p-2 rounded-full bg-sky-300">
-                <Link>Logout</Link>
+                <Link onClick={handleLogout}>Logout</Link>
               </li>
             </ul>
           </div>

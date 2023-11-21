@@ -211,3 +211,15 @@ export const updateCareTakerProfile = async ({ caretakerdata }) => {
 //     console.log(error);
 //   }
 // };
+
+export const logout=async()=>{
+  try {
+    console.log("logout clicked");
+    const data=await axios.get("delete-cookie",{
+      withCredentials:true
+    });
+    localStorage.clear();
+  } catch (error) {
+    
+  }
+}

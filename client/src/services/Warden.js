@@ -72,3 +72,51 @@ export const addStudents = async (
     console.log(error);
   }
 };
+
+export const getComplaints = async () => {
+  try {
+    const data = await axios.get("/api/complaint/getcomplaintswarden", {
+      withCredentials: true,
+    });
+    console.log(data.data);
+    if (data && data.data) {
+      localStorage.setItem("complaints", JSON.stringify(data.data));
+    }
+    return data.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
+export const getcaretakers = async () => {
+  try {
+    const data = await axios.get(api_key + "getcaretakers", {
+      withCredentials: true,
+    });
+    // console.log(data.data);
+    if (data && data.data) {
+      localStorage.setItem("caretakers", JSON.stringify(data.data));
+    }
+    return data.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const assigncaretaker=async({complaint_id, assignedTo})=>{
+  try {
+    const data=await axios.put(api_key+"assigncaretaker",{
+      complaint_id, assignedTo
+    },{
+      withCredentials:true
+    })
+    console.log(data?.status);
+    if(data?.status===200)
+    {
+        return getComplaints();
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}

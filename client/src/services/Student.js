@@ -41,7 +41,7 @@ export const addComplaint = async ({ issue, tags }) => {
 
 export const complaintsTag = [
   {
-    tag_val: "Water Problem",
+    tag_val: "water",
   },
   {
     tag_val: "Furniture",

@@ -22,7 +22,7 @@ const CareTakerDashBoard = ({header,profile_pic}) => {
             image={images.complaints}
             alt={"complaints"}
             content={"Get All Complaints"}
-            link={"/"}
+            link={"/get-complaint-caretaker"}
             linkcontent={"show"}
             icon=<BiSolidShow />
           />
@@ -40,7 +40,7 @@ const CareTakerDashBoard = ({header,profile_pic}) => {
             image={images.latest_news}
             alt={"latest announcements"}
             content={"Latest Announcements"}
-            link={"/"}
+            link={"/GetLatestAnnouncements"}
             linkcontent={"Read"}
             icon=<FaReadme />
           />

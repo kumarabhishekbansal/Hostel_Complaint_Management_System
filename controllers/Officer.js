@@ -143,6 +143,7 @@ const getProfile = async (req, res, next) => {
     //   throw new Error("Nothing to show");
     // }
     return res.status(200).json({
+      _id: data._id,
       name: data.name,
       phoneNo: data.phoneNo,
       email: data.email,
@@ -238,6 +239,7 @@ const update_officer_data = async (req, res, next) => {
     });
     // console.log("updatedofficer : ", updatedofficer);
     return res.status(200).json({
+      _id: updatedofficer._id,
       name: updatedofficer.name,
       phoneNo: updatedofficer.phoneNo,
       email: updatedofficer.email,

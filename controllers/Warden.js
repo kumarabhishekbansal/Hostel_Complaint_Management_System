@@ -1,5 +1,6 @@
 const Warden = require("../models/Warden");
 const Student=require("../models/Student");
+const Complaint=require("../models/Complaint");
 const { update_assign_task_care_taker } = require("./complaints");
 const {
   register_Student_From_Warden,
@@ -67,6 +68,7 @@ const login = async (req, res, next) => {
         sameSite: "lax",
       });
       return res.status(200).json({
+        _id:data._id,
         name: data.name,
         phoneNo: data.phoneNo,
         email: data.email,
@@ -154,6 +156,7 @@ const getProfile = async (req, res, next) => {
     //   throw new Error("Nothing to show");
     // }
     return res.status(200).json({
+      _id:data._id,
       name: data.name,
       phoneNo: data.phoneNo,
       email: data.email,
@@ -237,6 +240,7 @@ const update_warden_data = async (req, res, next) => {
       sameSite: "lax",
     });
     return res.status(200).json({
+      _id:updatedwarden._id,
       name: updatedwarden.name,
       phoneNo: updatedwarden.phoneNo,
       email: updatedwarden.email,
@@ -289,6 +293,7 @@ const update_warden_profile_pic = async (req, res, next) => {
             sameSite: "lax",
           });
           return res.status(200).json({
+            _id: updatedwarden._id,
             name: updatedwarden.name,
             phoneNo: updatedwarden.phoneNo,
             email: updatedwarden.email,
@@ -317,6 +322,7 @@ const update_warden_profile_pic = async (req, res, next) => {
             sameSite: "lax",
           });
           return res.status(200).json({
+            _id: updatedwarden._id,
             name: updatedwarden.name,
             phoneNo: updatedwarden.phoneNo,
             email: updatedwarden.email,
@@ -341,9 +347,11 @@ const update_warden_profile_pic = async (req, res, next) => {
 const assign_care_taker_to_complaint = async (req, res, next) => {
   try {
     const data = req.body;
-    if(await update_assign_task_care_taker(data)===true)
+    if(await update_assign_task_care_taker(data))
     {
-      return res.send("care taker assignes success");
+      return res.status(200).json({
+        message:"Assigned"
+      })
     }
     return res.send("csomething went wrong");
   } catch (error) {
@@ -358,9 +366,14 @@ const get_care_takers = async (req, res, next) => {
     const hostel_id = req.warden.hostelAssign;
     const data = { hostel_id: hostel_id };
     const getdata = await get_all_caretakers_for_warden(data);
+   if(res)
+   {
     return res.status(200).json({
       data: getdata,
     });
+   }
+   return getdata;
+    
   } catch (error) {
     console.log("error while get_care_takers warden");
   }

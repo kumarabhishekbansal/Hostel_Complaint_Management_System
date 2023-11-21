@@ -30,7 +30,7 @@ const WardenDashBoard = ({header,profile_pic}) => {
             image={images.add_care_taker}
             alt={"Show caretaker"}
             content={"Get All CareTaker"}
-            link={"/"}
+            link={"/show-caretaker-warden"}
             linkcontent={"Show"}
             icon=<BiShower />
           />
@@ -39,7 +39,7 @@ const WardenDashBoard = ({header,profile_pic}) => {
             image={images.complaints}
             alt={"complaints"}
             content={"Get All Complaints"}
-            link={"/"}
+            link={"/get-complaint-warden"}
             linkcontent={"show"}
             icon=<BiSolidShow />
           />
@@ -57,7 +57,7 @@ const WardenDashBoard = ({header,profile_pic}) => {
             image={images.latest_news}
             alt={"latest announcements"}
             content={"Latest Announcements"}
-            link={"/"}
+            link={"/GetLatestAnnouncements"}
             linkcontent={"Read"}
             icon=<FaReadme />
           />
@@ -66,7 +66,7 @@ const WardenDashBoard = ({header,profile_pic}) => {
             image={images.students}
             alt={"Get All students"}
             content={"Show All students"}
-            link={"/"}
+            link={"/show-students-warden"}
             linkcontent={"Show"}
             icon=<GiEyeTarget />
           />
