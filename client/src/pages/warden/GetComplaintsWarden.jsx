@@ -20,6 +20,7 @@ const GetComplaintsWarden = () => {
   const [data, setdata] = useState(complaints?.complaintsInfo?.data);
   const [caretakerassign, setcaretakerassign ] = useState(null);
   const caretakers = useSelector((state) => state.caretakers);
+  const [compid,setcompid ] = useState("");
   const [filters, setfilters] = useState({
     status: "",
     tag: "",
@@ -27,6 +28,12 @@ const GetComplaintsWarden = () => {
 
   const handlestatus = (e) => {
     setfilters({ ...filters, status: e });
+  };
+
+  const handleOption = (id) => {
+    // console.log("optiosn ",id);
+    setcompid(id);
+    // setupdatestatus(e.target.value);
   };
 
   const handletags = (e) => {
@@ -69,7 +76,7 @@ const GetComplaintsWarden = () => {
   });
 
   const handleSelect = (e) => {
-    console.log("slect",e.target);
+    // console.log("slect",e.target);
     setcaretakerassign(e.target.value);
   };
 
@@ -217,7 +224,9 @@ const GetComplaintsWarden = () => {
                         <div className="relative">
                           <select
                             // value={(caretakerassign!=null && val.assignedTo!==caretakerassign?caretakerassign:val.assignedTo)}
-                            value={val.assignedTo || caretakerassign}
+                            // value={val.assignedTo || caretakerassign}
+                            value={(compid && compid===val._id)?caretakerassign:val.assignedTo}
+                            onClick={()=>handleOption(val._id)}
                             onChange={handleSelect}
                             required
                             className={`rounded px-3 py-2 focus:ring focus:border-blue-300 text-center border-4 border-slate-400 outline-none p-4 text-3xl font-bold`}

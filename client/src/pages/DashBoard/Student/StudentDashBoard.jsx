@@ -53,14 +53,14 @@ const StudentDashBoard = ({ header, profile_pic }) => {
             icon=<BsPenFill />
           />
 
-          <DashBoardCards
+          {/* <DashBoardCards
             image={images.students}
             alt={"Show all complaints respective to room"}
             content={"Show all complaints respective to room"}
             link={"/"}
             linkcontent={"show"}
             icon=<PiReadCvLogoFill />
-          />
+          /> */}
 
           <DashBoardCards
             image={images.bgcontact_2}

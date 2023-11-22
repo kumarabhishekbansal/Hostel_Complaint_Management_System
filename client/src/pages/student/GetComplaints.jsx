@@ -3,7 +3,10 @@ import TagLine from "../../components/TagLines/TagLine";
 import { useSelector } from "react-redux";
 import { complaintsTag, statusTag } from "../../services/Student";
 import { Link } from "react-router-dom";
+import {useQueryClient,useQuery } from "@tanstack/react-query";
+import {getComplaints } from "../../services/Student";
 const GetComplaints = () => {
+  const queryclient = useQueryClient();
   const complaints = useSelector((state) => state.complaints);
   const [data, setdata] = useState(complaints?.complaintsInfo?.data);
   const [filters, setfilters] = useState({
@@ -37,6 +40,16 @@ const GetComplaints = () => {
     }
     setdata(results);
   }, [filters]);
+
+  useEffect(()=>{
+    // const { data: complaintdata, isLoading: complaintloading } = useQuery({
+    //   queryFn: () => {
+    //     return getComplaints();
+    //   },
+    //   queryKey: ["getcomplaintsdata"],
+    // });
+    getComplaints();
+  },[])
   return (
     <div className="mt-5">
       <TagLine heading={"Get Your Complaints"} />
