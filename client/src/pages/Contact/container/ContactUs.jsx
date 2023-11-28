@@ -23,11 +23,15 @@ const ContactUs = () => {
     },
     onSuccess: (data) => {
       console.log("Data is ", data);
-      toast.success("Your data has been sent successfully");
+      if(data)
+      {
+        toast.success(data);
+      }
+      
       navigate("/");
     },
     onError: (error) => {
-      toast.error(error.message);
+      toast.error(error?.message);
       console.log(error);
     },
   });

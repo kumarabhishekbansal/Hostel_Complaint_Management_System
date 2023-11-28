@@ -16,6 +16,7 @@ const {complaintrouter}=require("./routers/Complaint");
 const {roomrouter}=require("./routers/Rooms");
 const {hostelrouter}=require("./routers/Hostel");
 const {MessageRouter}=require("./routers/LatestMessage");
+const {msgroute}=require("./routers/Contact");
 dotenv.config();
 // establish connections
 
@@ -35,6 +36,7 @@ app.use("/api/complaint",complaintrouter);
 app.use("/api/room",roomrouter);
 app.use("/api/hostel",hostelrouter);
 app.use("/api/message",MessageRouter);
+app.use("/api/contact",msgroute);
 
 app.use(errorResponseHandling);
 // app.use(invalidPathHandler);
