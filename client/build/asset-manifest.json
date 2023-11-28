@@ -1,0 +1,36 @@
+{
+  "files": {
+    "main.css": "/static/css/main.b280c881.css",
+    "main.js": "/static/js/main.816d4f18.js",
+    "static/js/787.c4e7f8f9.chunk.js": "/static/js/787.c4e7f8f9.chunk.js",
+    "static/media/Turing_Block.jpg": "/static/media/Turing_Block.58db4b668bdfda44e958.jpg",
+    "static/media/Marco_Polo_Hostel.jpg": "/static/media/Marco_Polo_Hostel.bfdb8f73f97716bec510.jpg",
+    "static/media/Darwin_hostel.jpg": "/static/media/Darwin_hostel.ea5f673bee1119f6aa30.jpg",
+    "static/media/front_gate.jpg": "/static/media/front_gate.10f3a06e1ea32fd6de2f.jpg",
+    "static/media/Hero4.svg": "/static/media/Hero4.18a6ca40f0505508140a32a6e295a397.svg",
+    "static/media/front_gate_2.jpg": "/static/media/front_gate_2.3848c5add36bfdd6d31e.jpg",
+    "static/media/CTA.png": "/static/media/CTA.4f1c8f28de8184abd263.png",
+    "static/media/bgcontact2.jpg": "/static/media/bgcontact2.37f9618ac10afa3bfcdd.jpg",
+    "static/media/bgcontact.png": "/static/media/bgcontact.48cf54d073e3cdce2bd6.png",
+    "static/media/students.jpg": "/static/media/students.7b556fd79f34f2aa6837.jpg",
+    "static/media/Complaint box-logos_transparent.png": "/static/media/Complaint box-logos_transparent.877c704c2c019ee024df.png",
+    "static/media/Add_Hostels.jpg": "/static/media/Add_Hostels.a210d23f79e7d8b57700.jpg",
+    "static/media/Add_care_taker.jpg": "/static/media/Add_care_taker.ba7e668827f3f5174a10.jpg",
+    "static/media/bgcontact3.jpg": "/static/media/bgcontact3.4216f1c9a75fdb7ad1c4.jpg",
+    "static/media/1.jpg": "/static/media/1.92c17e70fdc44acf2053.jpg",
+    "static/media/mess_menu.jpg": "/static/media/mess_menu.05211574ee086daf03b8.jpg",
+    "static/media/semi1.png": "/static/media/semi1.2d7800dead0a9c629c2a.png",
+    "static/media/semi2.png": "/static/media/semi2.3a82ef84b42efff36de1.png",
+    "static/media/latest_announcements.jpg": "/static/media/latest_announcements.1d373637ebe36638184c.jpg",
+    "static/media/Add_warden.jpg": "/static/media/Add_warden.eacd0ae7d31bbaa57112.jpg",
+    "static/media/complaint.jpg": "/static/media/complaint.a34a3559878e6729caeb.jpg",
+    "index.html": "/index.html",
+    "main.b280c881.css.map": "/static/css/main.b280c881.css.map",
+    "main.816d4f18.js.map": "/static/js/main.816d4f18.js.map",
+    "787.c4e7f8f9.chunk.js.map": "/static/js/787.c4e7f8f9.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.b280c881.css",
+    "static/js/main.816d4f18.js"
+  ]
+}
