@@ -43,7 +43,11 @@ app.use(errorResponseHandling);
 
 
 const PORT = process.env.PORT || 5000;
-
+const path=require("path");
+app.use(express.static(path.join(__dirname, 'client', 'build')));
+app.get('/*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
+})
 app.get("/",(req,res)=>{
     console.log("server is listening at home page");
 })
