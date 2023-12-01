@@ -273,7 +273,9 @@ const get_all_complaints_for_caretaker = async (req, res, next) => {
     // now we have hostel id through
     // nnow get all students complaints which are belongs to same hostel
 
-    const data = await Complaint.find({})
+    const data = await Complaint.find({
+      assignedTo:req.caretaker._id
+    })
       .sort({
         createdDate: 1,
       })
